@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import Navbar from "@/app/src/components/navbar";
 import Footer from "@/app/src/components/footer";
 import Image from "next/image";
@@ -10,7 +10,10 @@ import {
   ChevronUp,
   Sparkles,
   ArrowRight,
+  Zap,
+  Star,
 } from "lucide-react";
+import { motion, useInView, AnimatePresence, useAnimation } from "framer-motion";
 
 interface Product {
   name: string;
@@ -24,58 +27,25 @@ interface ProductCategory {
 }
 
 export default function ProductsPage() {
-  const [isVisible] = useState(true);
-  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
-    new Set()
-  );
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
   const sectionRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const initializedRef = useRef(false);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.05, margin: "-100px" });
+  const [isMobile, setIsMobile] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            requestAnimationFrame(() => {
-              element.style.opacity = "1";
-              element.style.transform = "translateY(0)";
-              element.style.transition = `opacity 0.8s ease-out ${
-                index * 0.1
-              }s, transform 0.8s ease-out ${index * 0.1}s`;
-            });
-            observerRef.current?.unobserve(element);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    requestAnimationFrame(() => {
-      const elements = document.querySelectorAll(".scroll-animate");
-      elements.forEach((el) => {
-        const htmlEl = el as HTMLElement;
-        if (htmlEl.style.opacity !== "1" && observerRef.current) {
-          htmlEl.style.opacity = "0";
-          htmlEl.style.transform = "translateY(30px)";
-          htmlEl.style.willChange = "opacity, transform";
-          observerRef.current.observe(htmlEl);
-        }
-      });
-    });
-
-    return () => {
-      if (observerRef.current) {
-        const elements = document.querySelectorAll(".scroll-animate");
-        elements.forEach((el) => observerRef.current?.unobserve(el));
-        observerRef.current.disconnect();
-      }
-      initializedRef.current = false;
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
     };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   const toggleCategory = (categoryId: number) => {
@@ -197,74 +167,235 @@ export default function ProductsPage() {
     },
   ];
 
+  const colors = [
+    "#3B82F6", "#8B5CF6", "#10B981", "#F59E0B", "#EC4899",
+    "#06B6D4", "#6366F1", "#F97316", "#64748B",
+  ];
+
+  // Generate floating particles with stable positions
+  const floatingParticles = useMemo(() => 
+    Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 2 + Math.random() * 4,
+      duration: 10 + Math.random() * 20,
+      delay: Math.random() * 5,
+    })),
+  []);
+
   return (
     <>
       <Navbar />
       <main
-        className="min-h-screen transition-colors duration-300"
+        className="min-h-screen transition-colors duration-300 pt-20 relative overflow-hidden"
         style={{
           backgroundColor: "var(--bg-primary)",
           color: "var(--text-primary)",
         }}
       >
-        {/* Hero Section */}
-        <section
+        {/* Hero Section with Dramatic Animations */}
+        <motion.section
           className="relative py-20 lg:py-32 overflow-hidden"
           style={{
             backgroundColor: "var(--bg-secondary)",
           }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
         >
-          <div className="absolute inset-0 opacity-5">
-            <div
-              className="absolute top-0 left-0 w-full h-full"
-              style={{
-                backgroundImage: `radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)`,
-                backgroundSize: "40px 40px",
-              }}
-            ></div>
+          {/* Animated Background Particles - Always Visible */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {floatingParticles.slice(0, 20).map((particle) => (
+              <motion.div
+                key={particle.id}
+                className="absolute rounded-full"
+                style={{
+                  left: `${particle.x}%`,
+                  top: `${particle.y}%`,
+                  width: `${particle.size}px`,
+                  height: `${particle.size}px`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.8), rgba(139, 69, 19, 0.2))`,
+                  boxShadow: "0 0 20px rgba(139, 69, 19, 0.5)",
+                }}
+                animate={{
+                  y: [-30, 30, -30],
+                  x: [-20, 20, -20],
+                  scale: [1, 1.5, 1],
+                  opacity: [0.3, 0.8, 0.3],
+                }}
+                transition={{
+                  duration: particle.duration,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: particle.delay,
+                }}
+              />
+            ))}
           </div>
 
+          {/* Rotating Geometric Shapes */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={`shape-${i}`}
+              className="absolute border-4 opacity-20"
+              style={{
+                width: `${80 + i * 40}px`,
+                height: `${80 + i * 40}px`,
+                borderColor: "var(--primary)",
+                left: `${15 + i * 15}%`,
+                top: `${20 + i * 12}%`,
+                borderRadius: i % 2 === 0 ? "50%" : "20%",
+              }}
+              animate={{
+                rotate: [0, 360],
+                scale: [1, 1.2, 1],
+                borderRadius: i % 2 === 0 ? ["50%", "20%", "50%"] : ["20%", "50%", "20%"],
+              }}
+              transition={{
+                duration: 15 + i * 3,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+          ))}
+
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
-              className={`text-center transition-all duration-1000 ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-            >
-              <div className="flex justify-center mb-6">
-                <div
-                  className="p-4 rounded-full"
+            <motion.div className="text-center">
+              {/* Animated Icon with Multiple Effects */}
+              <motion.div
+                className="flex justify-center mb-6"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 1, type: "spring", bounce: 0.5 }}
+              >
+                <motion.div
+                  className="relative p-6 rounded-3xl"
                   style={{
                     backgroundColor: "var(--tertiary)",
                     color: "var(--primary)",
                   }}
+                  animate={{
+                    boxShadow: [
+                      "0 0 20px rgba(139, 69, 19, 0.3)",
+                      "0 0 60px rgba(139, 69, 19, 0.8)",
+                      "0 0 20px rgba(139, 69, 19, 0.3)",
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Package className="w-12 h-12" />
-                </div>
-              </div>
-              <h1
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Our Products
-              </h1>
-              <div
-                className="w-24 h-1 mx-auto mb-8 rounded-full"
-                style={{ backgroundColor: "var(--primary)" }}
-              ></div>
-              <p
-                className="text-lg sm:text-xl max-w-3xl mx-auto"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                Comprehensive range of high-quality chemicals for diverse
-                industrial applications
-              </p>
-            </div>
-          </div>
-        </section>
+                  <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Package className="w-16 h-16" />
+                  </motion.div>
+                  
+                  {/* Orbiting particles around icon */}
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-3 h-3 rounded-full"
+                      style={{
+                        background: "var(--primary)",
+                        boxShadow: "0 0 10px var(--primary)",
+                      }}
+                      animate={{
+                        x: [
+                          Math.cos((i * Math.PI * 2) / 8) * 60,
+                          Math.cos(((i + 1) * Math.PI * 2) / 8) * 60,
+                        ],
+                        y: [
+                          Math.sin((i * Math.PI * 2) / 8) * 60,
+                          Math.sin(((i + 1) * Math.PI * 2) / 8) * 60,
+                        ],
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              </motion.div>
 
-        {/* Products Section */}
+              {/* Animated Title with Gradient */}
+              <motion.h1
+                className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 relative inline-block"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <motion.span
+                  style={{
+                    background: "linear-gradient(90deg, var(--primary), #F59E0B, var(--primary))",
+                    backgroundSize: "200% auto",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                  animate={{
+                    backgroundPosition: ["0% center", "200% center", "0% center"],
+                  }}
+                  transition={{ duration: 5, repeat: Infinity }}
+                >
+                  Our Products
+                </motion.span>
+              </motion.h1>
+
+              {/* Animated Underline */}
+              <motion.div
+                className="w-32 h-2 mx-auto mb-8 rounded-full relative overflow-hidden"
+                style={{ backgroundColor: "var(--primary)" }}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 0.5 }}
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  style={{ opacity: 0.5 }}
+                />
+              </motion.div>
+
+              <motion.p
+                className="text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+              >
+                Comprehensive range of high-quality chemicals for diverse industrial applications
+              </motion.p>
+            </motion.div>
+          </div>
+
+          {/* Animated Wave Lines */}
+          {[...Array(4)].map((_, i) => (
+            <motion.div
+              key={`wave-${i}`}
+              className="absolute left-0 right-0 h-1"
+              style={{
+                background: `linear-gradient(90deg, transparent, rgba(139, 69, 19, ${0.4 - i * 0.1}), transparent)`,
+                top: `${25 + i * 20}%`,
+              }}
+              animate={{
+                scaleX: [0.5, 1.5, 0.5],
+                opacity: [0.3, 0.7, 0.3],
+              }}
+              transition={{
+                duration: 4 + i,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.5,
+              }}
+            />
+          ))}
+        </motion.section>
+
+        {/* Products Section with Extensive Animations */}
         <section
           ref={sectionRef}
           className="py-16 lg:py-24 relative overflow-hidden"
@@ -272,454 +403,527 @@ export default function ProductsPage() {
             backgroundColor: "var(--bg-primary)",
           }}
         >
-          {/* Animated Background Elements */}
+          {/* Constantly Moving Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div
-              className="absolute top-20 right-10 w-96 h-96 rounded-full opacity-5 blur-3xl animate-pulse"
-              style={{ backgroundColor: "var(--primary)" }}
-            ></div>
-            <div
-              className="absolute bottom-20 left-10 w-72 h-72 rounded-full opacity-5 blur-3xl animate-pulse"
-              style={{ backgroundColor: "var(--primary)" }}
-            ></div>
+            {floatingParticles.slice(20).map((particle) => (
+              <motion.div
+                key={particle.id}
+                className="absolute rounded-full blur-sm"
+                style={{
+                  left: `${particle.x}%`,
+                  top: `${particle.y}%`,
+                  width: `${particle.size * 4}px`,
+                  height: `${particle.size * 4}px`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.15), transparent)`,
+                }}
+                animate={{
+                  y: [-50, 50, -50],
+                  x: [-30, 30, -30],
+                  scale: [1, 1.8, 1],
+                }}
+                transition={{
+                  duration: particle.duration,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: particle.delay,
+                }}
+              />
+            ))}
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Animated Section Title */}
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div className="flex items-center justify-center gap-4 mb-4">
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                >
+                  <Sparkles className="w-8 h-8" style={{ color: "var(--primary)" }} />
+                </motion.div>
+                <motion.h2
+                  className="text-3xl sm:text-4xl font-bold"
+                  style={{ color: "var(--text-primary)" }}
+                  animate={{
+                    textShadow: [
+                      "0 0 10px rgba(139, 69, 19, 0.3)",
+                      "0 0 20px rgba(139, 69, 19, 0.6)",
+                      "0 0 10px rgba(139, 69, 19, 0.3)",
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  Explore Our Range
+                </motion.h2>
+                <motion.div
+                  animate={{ rotate: [360, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                >
+                  <Sparkles className="w-8 h-8" style={{ color: "var(--primary)" }} />
+                </motion.div>
+              </motion.div>
+            </motion.div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {categories.map((category, index) => {
                 const isExpanded = expandedCategories.has(category.id);
-                const colors = [
-                  "#3B82F6",
-                  "#8B5CF6",
-                  "#10B981",
-                  "#F59E0B",
-                  "#EC4899",
-                  "#06B6D4",
-                  "#6366F1",
-                  "#F97316",
-                  "#64748B",
-                ];
                 const categoryColor = colors[index % colors.length];
 
                 return (
-                  <div
+                  <motion.div
                     key={category.id}
-                    className="scroll-animate"
-                    style={{
-                      animationDelay: `${index * 100}ms`,
+                    initial={{ opacity: 0, y: 60, rotateX: -15 }}
+                    animate={isInView ? { 
+                      opacity: 1, 
+                      y: 0, 
+                      rotateX: 0 
+                    } : { 
+                      opacity: 0, 
+                      y: 60, 
+                      rotateX: -15 
+                    }}
+                    transition={{ 
+                      duration: 0.8, 
+                      delay: index * 0.1,
+                      type: "spring",
+                      stiffness: 100,
                     }}
                   >
-                    <div
-                      className="relative group rounded-3xl overflow-hidden transition-all duration-700 ease-out"
+                    <motion.div
+                      className="relative group rounded-3xl overflow-hidden cursor-pointer"
                       style={{
                         backgroundColor: "var(--bg-secondary)",
                         border: "2px solid var(--border-primary)",
-                        minHeight: "450px",
+                        minHeight: "500px",
                         display: "flex",
                         flexDirection: "column",
-                        boxShadow: "0 8px 24px var(--shadow-sm)",
-                        transform: "translateY(0) scale(1)",
                       }}
-                      onMouseEnter={(e) => {
-                        const card = e.currentTarget;
-                        card.style.borderColor = categoryColor;
-                        card.style.transform =
-                          "translateY(-20px) scale(1.04) rotateY(2deg)";
-                        card.style.boxShadow = `0 35px 70px ${categoryColor}30`;
-
-                        // Animate image
-                        const imageElement = card.querySelector(
-                          "img"
-                        ) as HTMLElement;
-                        if (imageElement) {
-                          imageElement.style.transform =
-                            "scale(1.15) rotate(2deg)";
-                        }
-
-                        // Animate badge
-                        const badgeElement = card.querySelector(
-                          ".category-badge"
-                        ) as HTMLElement;
-                        if (badgeElement) {
-                          badgeElement.style.transform =
-                            "translateY(-5px) scale(1.05)";
-                          badgeElement.style.backgroundColor = `${categoryColor}20`;
-                        }
-
-                        // Animate count badge
-                        const countBadge = card.querySelector(
-                          ".count-badge"
-                        ) as HTMLElement;
-                        if (countBadge) {
-                          countBadge.style.transform = "scale(1.1)";
-                          countBadge.style.backgroundColor = categoryColor;
-                        }
-
-                        // Animate sparkle icon
-                        const sparkleIcon = card.querySelector(
-                          ".sparkle-icon"
-                        ) as HTMLElement;
-                        if (sparkleIcon) {
-                          sparkleIcon.style.opacity = "1";
-                          sparkleIcon.style.transform =
-                            "scale(1.2) rotate(180deg)";
-                        }
-
-                        // Animate button
-                        const buttonElement = card.querySelector(
-                          ".expand-button"
-                        ) as HTMLElement;
-                        if (buttonElement) {
-                          buttonElement.style.backgroundColor = categoryColor;
-                          buttonElement.style.transform = "scale(1.05)";
-                        }
-
-                        // Animate gradient
-                        const gradientElement = card.querySelector(
-                          ".product-gradient"
-                        ) as HTMLElement;
-                        if (gradientElement) {
-                          gradientElement.style.opacity = "0.2";
-                        }
-
-                        // Animate shimmer
-                        const shimmerElement = card.querySelector(
-                          ".product-shimmer"
-                        ) as HTMLElement;
-                        if (shimmerElement) {
-                          shimmerElement.style.animation =
-                            "shimmer 2s infinite";
-                        }
+                      animate={{
+                        y: [0, -10, 0],
                       }}
-                      onMouseLeave={(e) => {
-                        const card = e.currentTarget;
-                        card.style.borderColor = "var(--border-primary)";
-                        card.style.transform =
-                          "translateY(0) scale(1) rotateY(0deg)";
-                        card.style.boxShadow = "0 8px 24px var(--shadow-sm)";
-
-                        // Reset image
-                        const imageElement = card.querySelector(
-                          "img"
-                        ) as HTMLElement;
-                        if (imageElement) {
-                          imageElement.style.transform =
-                            "scale(1) rotate(0deg)";
-                        }
-
-                        // Reset badge
-                        const badgeElement = card.querySelector(
-                          ".category-badge"
-                        ) as HTMLElement;
-                        if (badgeElement) {
-                          badgeElement.style.transform =
-                            "translateY(0) scale(1)";
-                          badgeElement.style.backgroundColor = "transparent";
-                        }
-
-                        // Reset count badge
-                        const countBadge = card.querySelector(
-                          ".count-badge"
-                        ) as HTMLElement;
-                        if (countBadge) {
-                          countBadge.style.transform = "scale(1)";
-                          countBadge.style.backgroundColor = "var(--primary)";
-                        }
-
-                        // Reset sparkle
-                        const sparkleIcon = card.querySelector(
-                          ".sparkle-icon"
-                        ) as HTMLElement;
-                        if (sparkleIcon) {
-                          sparkleIcon.style.opacity = "0";
-                          sparkleIcon.style.transform = "scale(1) rotate(0deg)";
-                        }
-
-                        // Reset button
-                        const buttonElement = card.querySelector(
-                          ".expand-button"
-                        ) as HTMLElement;
-                        if (buttonElement) {
-                          buttonElement.style.backgroundColor =
-                            "var(--primary)";
-                          buttonElement.style.transform = "scale(1)";
-                        }
-
-                        // Reset gradient
-                        const gradientElement = card.querySelector(
-                          ".product-gradient"
-                        ) as HTMLElement;
-                        if (gradientElement) {
-                          gradientElement.style.opacity = "0";
-                        }
-
-                        // Reset shimmer
-                        const shimmerElement = card.querySelector(
-                          ".product-shimmer"
-                        ) as HTMLElement;
-                        if (shimmerElement) {
-                          shimmerElement.style.animation = "none";
-                        }
+                      transition={{
+                        duration: 4 + index * 0.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
                       }}
+                      whileHover={!isMobile ? {
+                        y: -25,
+                        scale: 1.05,
+                        rotateY: 5,
+                        borderColor: categoryColor,
+                        boxShadow: `0 40px 80px ${categoryColor}40`,
+                        transition: { duration: 0.3 },
+                      } : {}}
                     >
-                      {/* Shimmer Effect */}
-                      <div
-                        className="product-shimmer absolute inset-0 pointer-events-none z-20"
+                      {/* Constantly Moving Shimmer */}
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none z-30"
                         style={{
-                          background: `linear-gradient(110deg, transparent 30%, ${categoryColor}20 50%, transparent 70%)`,
-                          transform: "translateX(-100%)",
+                          background: `linear-gradient(120deg, transparent 20%, ${categoryColor}30 50%, transparent 80%)`,
                         }}
-                      ></div>
+                        animate={{
+                          x: ["-100%", "200%"],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          repeatDelay: 2,
+                        }}
+                      />
 
-                      {/* Background Gradient */}
-                      <div
-                        className="product-gradient absolute inset-0 transition-opacity duration-700"
+                      {/* Animated Gradient Background */}
+                      <motion.div
+                        className="absolute inset-0 opacity-10"
                         style={{
-                          background: `radial-gradient(circle at bottom left, ${categoryColor}15 0%, transparent 70%)`,
-                          opacity: 0,
+                          background: `radial-gradient(circle at 50% 50%, ${categoryColor}, transparent)`,
                         }}
-                      ></div>
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0.1, 0.3, 0.1],
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                        }}
+                      />
 
-                      {/* Image Section */}
-                      <div className="relative w-full h-72 overflow-hidden">
-                        <Image
-                          src={category.image}
-                          alt={category.name}
-                          fill
-                          className="object-cover transition-all duration-700"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          priority={index < 3}
-                          style={{
-                            transform: "scale(1)",
+                      {/* Image Section with Zoom Animation */}
+                      <div className="relative w-full h-72 overflow-hidden bg-gray-200">
+                        <motion.div
+                          className="relative w-full h-full"
+                          animate={{
+                            scale: [1, 1.1, 1],
                           }}
-                        />
+                          transition={{
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        >
+                          <Image
+                            src={category.image}
+                            alt={category.name}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority={index < 3}
+                            unoptimized
+                          />
+                        </motion.div>
 
                         {/* Gradient Overlay */}
                         <div
-                          className="absolute inset-0 transition-opacity duration-700"
+                          className="absolute inset-0"
                           style={{
-                            background:
-                              "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 100%)",
+                            background: "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%)",
                           }}
-                        ></div>
+                        />
 
-                        {/* Sparkle Icon */}
-                        <div className="absolute top-4 right-4 z-10">
+                        {/* Sparkle Icon - Always Pulsing */}
+                        <motion.div
+                          className="absolute top-4 right-4 z-20"
+                          animate={{
+                            scale: [1, 1.3, 1],
+                            rotate: [0, 180, 360],
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                          }}
+                        >
                           <Sparkles
-                            className="sparkle-icon w-6 h-6 transition-all duration-700 opacity-0"
-                            style={{ color: categoryColor }}
+                            className="w-7 h-7"
+                            style={{ color: categoryColor, filter: "drop-shadow(0 0 10px currentColor)" }}
                           />
-                        </div>
+                        </motion.div>
 
-                        {/* Category Name Badge */}
+                        {/* Category Badge with Glow */}
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <div
-                            className="category-badge inline-block px-4 py-2 rounded-xl transition-all duration-700"
+                          <motion.div
+                            className="inline-block px-5 py-3 rounded-2xl"
                             style={{
-                              backgroundColor: "transparent",
-                              backdropFilter: "blur(10px)",
+                              backdropFilter: "blur(15px)",
+                              background: `linear-gradient(135deg, ${categoryColor}40, ${categoryColor}20)`,
+                              border: `2px solid ${categoryColor}`,
                             }}
+                            animate={{
+                              boxShadow: [
+                                `0 0 20px ${categoryColor}40`,
+                                `0 0 40px ${categoryColor}80`,
+                                `0 0 20px ${categoryColor}40`,
+                              ],
+                            }}
+                            transition={{ duration: 2, repeat: Infinity }}
                           >
                             <h3
-                              className="text-xl lg:text-2xl font-bold text-white drop-shadow-2xl"
+                              className="text-xl lg:text-2xl font-bold text-white"
                               style={{
                                 textShadow: "0 4px 12px rgba(0, 0, 0, 0.9)",
                               }}
                             >
                               {category.name}
                             </h3>
-                          </div>
+                          </motion.div>
                         </div>
+
+                        {/* Corner Accents - Animated */}
+                        {[...Array(4)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-8 h-8"
+                            style={{
+                              border: `3px solid ${categoryColor}`,
+                              [i < 2 ? "top" : "bottom"]: "10px",
+                              [i % 2 === 0 ? "left" : "right"]: "10px",
+                              borderTop: i >= 2 ? "none" : undefined,
+                              borderBottom: i < 2 ? "none" : undefined,
+                              borderLeft: i % 2 !== 0 ? "none" : undefined,
+                              borderRight: i % 2 === 0 ? "none" : undefined,
+                            }}
+                            animate={{
+                              opacity: [0.3, 1, 0.3],
+                              scale: [1, 1.2, 1],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              delay: i * 0.5,
+                            }}
+                          />
+                        ))}
                       </div>
 
                       {/* Content Section */}
                       <div className="flex-1 flex flex-col p-6 relative z-10">
-                        {/* Products Count with Icon */}
+                        {/* Product Count Badge - Animated */}
                         <div className="mb-4 flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className="count-badge px-3 py-1.5 rounded-lg transition-all duration-500"
-                              style={{
-                                backgroundColor: "var(--primary)",
-                                color: "var(--button-text)",
-                              }}
+                          <motion.div
+                            className="px-4 py-2 rounded-xl font-bold text-sm"
+                            style={{
+                              backgroundColor: categoryColor,
+                              color: "white",
+                              boxShadow: `0 4px 15px ${categoryColor}50`,
+                            }}
+                            animate={{
+                              scale: [1, 1.1, 1],
+                              boxShadow: [
+                                `0 4px 15px ${categoryColor}50`,
+                                `0 8px 25px ${categoryColor}80`,
+                                `0 4px 15px ${categoryColor}50`,
+                              ],
+                            }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          >
+                            {category.products.length} Product{category.products.length !== 1 ? "s" : ""}
+                          </motion.div>
+                          
+                          <motion.div
+                            animate={{
+                              x: [0, 8, 0],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                            }}
+                          >
+                            <ArrowRight
+                              className="w-6 h-6"
+                              style={{ color: categoryColor }}
+                            />
+                          </motion.div>
+                        </div>
+
+                        {/* Expandable Product List */}
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.5 }}
+                              className="overflow-hidden mb-4"
                             >
-                              <p className="text-xs font-bold">
-                                {category.products.length} Product
-                                {category.products.length !== 1 ? "s" : ""}
-                              </p>
-                            </div>
-                          </div>
-                          <ArrowRight
-                            className="w-5 h-5 transition-all duration-500 opacity-0 group-hover:opacity-100"
-                            style={{ color: categoryColor }}
-                          />
-                        </div>
+                              <ul className="space-y-3">
+                                {category.products.map((product, productIndex) => (
+                                  <motion.li
+                                    key={productIndex}
+                                    className="flex items-center space-x-3 group/item"
+                                    style={{
+                                      color: "var(--text-secondary)",
+                                    }}
+                                    initial={{ opacity: 0, x: -30 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ 
+                                      duration: 0.4, 
+                                      delay: productIndex * 0.08 
+                                    }}
+                                    whileHover={!isMobile ? {
+                                      x: 12,
+                                      color: categoryColor,
+                                      transition: { duration: 0.2 },
+                                    } : {}}
+                                  >
+                                    <motion.div
+                                      animate={{
+                                        scale: [1, 1.2, 1],
+                                      }}
+                                      transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        delay: productIndex * 0.2,
+                                      }}
+                                    >
+                                      <Zap
+                                        className="w-4 h-4 shrink-0"
+                                        style={{ color: categoryColor }}
+                                      />
+                                    </motion.div>
+                                    <span className="text-sm font-medium">{product.name}</span>
+                                  </motion.li>
+                                ))}
+                              </ul>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
 
-                        {/* Products List */}
-                        <div
-                          className={`overflow-hidden transition-all duration-700 ease-in-out ${
-                            isExpanded
-                              ? "max-h-[500px] opacity-100"
-                              : "max-h-0 opacity-0"
-                          }`}
-                        >
-                          <ul className="space-y-3 mb-4">
-                            {category.products.map((product, productIndex) => (
-                              <li
-                                key={productIndex}
-                                className="flex items-start space-x-3 group/item"
-                                style={{
-                                  color: "var(--text-secondary)",
-                                  transform: isExpanded
-                                    ? "translateX(0)"
-                                    : "translateX(-20px)",
-                                  opacity: isExpanded ? 1 : 0,
-                                  transition: `all 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${
-                                    productIndex * 60
-                                  }ms`,
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.transform =
-                                    "translateX(8px)";
-                                  e.currentTarget.style.color = categoryColor;
-                                  const dot = e.currentTarget.querySelector(
-                                    ".product-dot"
-                                  ) as HTMLElement;
-                                  if (dot) {
-                                    dot.style.transform = "scale(1.5)";
-                                    dot.style.backgroundColor = categoryColor;
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.transform =
-                                    "translateX(0)";
-                                  e.currentTarget.style.color =
-                                    "var(--text-secondary)";
-                                  const dot = e.currentTarget.querySelector(
-                                    ".product-dot"
-                                  ) as HTMLElement;
-                                  if (dot) {
-                                    dot.style.transform = "scale(1)";
-                                    dot.style.backgroundColor =
-                                      "var(--primary)";
-                                  }
-                                }}
-                              >
-                                <span
-                                  className="product-dot w-2 h-2 rounded-full mt-2 shrink-0 transition-all duration-300"
-                                  style={{ backgroundColor: "var(--primary)" }}
-                                ></span>
-                                <span className="text-sm font-medium">
-                                  {product.name}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        {/* Expand/Collapse Button */}
-                        <button
+                        {/* Expand Button - Highly Animated */}
+                        <motion.button
                           onClick={() => toggleCategory(category.id)}
-                          className="expand-button mt-auto flex items-center justify-center space-x-2 px-5 py-3.5 rounded-xl font-semibold transition-all duration-500 relative overflow-hidden group/btn"
+                          className="mt-auto flex items-center justify-center space-x-3 px-6 py-4 rounded-2xl font-bold relative overflow-hidden"
                           style={{
-                            backgroundColor: "var(--primary)",
-                            color: "var(--button-text)",
+                            backgroundColor: categoryColor,
+                            color: "white",
                           }}
-                          onMouseEnter={(e) => {
-                            const btn = e.currentTarget;
-                            btn.style.boxShadow = `0 8px 20px ${categoryColor}50`;
-
-                            const icon = btn.querySelector(
-                              "svg"
-                            ) as SVGElement | null;
-                            if (icon) {
-                              icon.style.transform = isExpanded
-                                ? "translateY(-4px)"
-                                : "translateY(4px)";
-                            }
+                          whileHover={{
+                            scale: 1.05,
+                            boxShadow: `0 15px 35px ${categoryColor}60`,
                           }}
-                          onMouseLeave={(e) => {
-                            const btn = e.currentTarget;
-                            btn.style.boxShadow = "none";
-
-                            const icon = btn.querySelector(
-                              "svg"
-                            ) as SVGElement | null;
-                            if (icon) {
-                              icon.style.transform = "translateY(0)";
-                            }
+                          whileTap={{ scale: 0.95 }}
+                          animate={{
+                            boxShadow: [
+                              `0 5px 15px ${categoryColor}30`,
+                              `0 10px 25px ${categoryColor}50`,
+                              `0 5px 15px ${categoryColor}30`,
+                            ],
+                          }}
+                          transition={{
+                            boxShadow: { duration: 2, repeat: Infinity },
                           }}
                         >
-                          <span className="relative z-10">
+                          <span className="relative z-10 text-base">
                             {isExpanded ? "Show Less" : "View Products"}
                           </span>
-                          <span className="relative z-10 transition-transform duration-500">
-                            {isExpanded ? (
-                              <ChevronUp className="w-5 h-5" />
-                            ) : (
-                              <ChevronDown className="w-5 h-5" />
-                            )}
-                          </span>
-                          {/* Button Shine Effect */}
-                          <div
-                            className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"
-                            style={{
-                              background: `linear-gradient(90deg, transparent 0%, ${categoryColor}30 50%, transparent 100%)`,
+                          <motion.div
+                            className="relative z-10"
+                            animate={{ 
+                              y: isExpanded ? [0, -4, 0] : [0, 4, 0],
+                              rotate: isExpanded ? 180 : 0,
                             }}
-                          ></div>
-                        </button>
+                            transition={{ 
+                              y: { duration: 1, repeat: Infinity },
+                              rotate: { duration: 0.3 },
+                            }}
+                          >
+                            {isExpanded ? (
+                              <ChevronUp className="w-6 h-6" />
+                            ) : (
+                              <ChevronDown className="w-6 h-6" />
+                            )}
+                          </motion.div>
+                          
+                          {/* Button shine animation */}
+                          <motion.div
+                            className="absolute inset-0"
+                            style={{
+                              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
+                            }}
+                            animate={{
+                              x: ["-100%", "100%"],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              repeatDelay: 1,
+                            }}
+                          />
+                        </motion.button>
                       </div>
 
-                      {/* Animated Border Glow */}
-                      <div
-                        className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-700"
-                        style={{
-                          boxShadow: `inset 0 0 0 2px ${categoryColor}`,
-                          opacity: 0,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.opacity = "0.4";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.opacity = "0";
-                        }}
-                      ></div>
-                    </div>
-                  </div>
+                      {/* Floating Stars on Card */}
+                      {!isMobile && [...Array(6)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute pointer-events-none z-20"
+                          style={{
+                            left: `${20 + i * 12}%`,
+                            top: `${30 + (i % 3) * 20}%`,
+                          }}
+                          animate={{
+                            y: [-20, 20, -20],
+                            opacity: [0, 1, 0],
+                            scale: [0, 1, 0],
+                            rotate: [0, 180, 360],
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            delay: i * 0.5,
+                          }}
+                        >
+                          <Star
+                            className="w-4 h-4"
+                            style={{ 
+                              color: categoryColor,
+                              filter: "drop-shadow(0 0 8px currentColor)",
+                            }}
+                          />
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </motion.div>
                 );
               })}
             </div>
           </div>
         </section>
 
-        {/* Summary Section */}
-        <section
-          className="py-16 lg:py-24"
+        {/* Summary Section with Animations */}
+        <motion.section
+          className="py-16 lg:py-24 relative overflow-hidden"
           style={{
             backgroundColor: "var(--bg-secondary)",
           }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="scroll-animate text-center">
-              <h2
-                className="text-3xl sm:text-4xl font-bold mb-6"
+          {/* Animated background grid */}
+          <motion.div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: "radial-gradient(circle, var(--primary) 2px, transparent 2px)",
+              backgroundSize: "50px 50px",
+            }}
+            animate={{
+              backgroundPosition: ["0px 0px", "50px 50px"],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.h2
+                className="text-3xl sm:text-5xl font-bold mb-6 relative inline-block"
                 style={{ color: "var(--text-primary)" }}
+                animate={{
+                  textShadow: [
+                    "0 0 20px rgba(139, 69, 19, 0.2)",
+                    "0 0 40px rgba(139, 69, 19, 0.5)",
+                    "0 0 20px rgba(139, 69, 19, 0.2)",
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
               >
                 Quality Products for Every Industry
-              </h2>
-              <p
-                className="text-lg max-w-3xl mx-auto leading-relaxed"
+                
+                {/* Decorative lines */}
+                <motion.span
+                  className="absolute -bottom-4 left-0 right-0 h-1 rounded-full"
+                  style={{ backgroundColor: "var(--primary)" }}
+                  animate={{
+                    scaleX: [0.5, 1, 0.5],
+                    opacity: [0.5, 1, 0.5],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </motion.h2>
+              
+              <motion.p
+                className="text-lg sm:text-xl max-w-4xl mx-auto leading-relaxed mt-8"
                 style={{ color: "var(--text-secondary)" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
               >
                 We offer a comprehensive range of high-quality chemicals across
                 multiple categories, serving various industries including paints
                 and coatings, printing inks, agro-chemical products, specialty
                 polymers, pharmaceuticals, and specialty industrial chemicals.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
       </main>
       <Footer />
     </>

@@ -1,64 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Navbar from "@/app/src/components/navbar";
 import Footer from "@/app/src/components/footer";
 import { Target, Eye, Globe, Users, TrendingUp, Shield } from "lucide-react";
+import { motion, useInView } from "framer-motion";
 
 export default function MissionVisionPage() {
-  const [isVisible] = useState(true);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const initializedRef = useRef(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const isInView = useInView(sectionRef, { 
+    once: true, 
+    amount: 0.05,
+    margin: "-100px"
+  });
 
   useEffect(() => {
-    // Prevent double initialization
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            // Use requestAnimationFrame for smooth animation
-            requestAnimationFrame(() => {
-              element.style.opacity = "1";
-              element.style.transform = "translateY(0)";
-              element.style.transition = `opacity 0.8s ease-out ${
-                index * 0.1
-              }s, transform 0.8s ease-out ${index * 0.1}s`;
-            });
-            observerRef.current?.unobserve(element);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    // Initialize elements immediately but with RAF for smoothness
-    requestAnimationFrame(() => {
-      const elements = document.querySelectorAll(".scroll-animate");
-      elements.forEach((el) => {
-        const htmlEl = el as HTMLElement;
-        // Only set initial state if not already animated
-        if (htmlEl.style.opacity !== "1" && observerRef.current) {
-          htmlEl.style.opacity = "0";
-          htmlEl.style.transform = "translateY(30px)";
-          htmlEl.style.willChange = "opacity, transform";
-          observerRef.current.observe(htmlEl);
-        }
-      });
-    });
-
-    return () => {
-      if (observerRef.current) {
-        const elements = document.querySelectorAll(".scroll-animate");
-        elements.forEach((el) => observerRef.current?.unobserve(el));
-        observerRef.current.disconnect();
-      }
-      initializedRef.current = false;
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const missionPoints = [
@@ -111,89 +72,195 @@ export default function MissionVisionPage() {
     <>
       <Navbar />
       <main
-        className="min-h-screen transition-colors duration-300"
+        className="min-h-screen transition-colors duration-300 pt-20"
         style={{
           backgroundColor: "var(--bg-primary)",
           color: "var(--text-primary)",
         }}
       >
         {/* Hero Section */}
-        <section
+        <motion.section
           className="relative py-20 lg:py-32 overflow-hidden"
           style={{
             backgroundColor: "var(--bg-secondary)",
           }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="absolute inset-0 opacity-5">
-            <div
-              className="absolute top-0 left-0 w-full h-full"
-              style={{
-                backgroundImage: `radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)`,
-                backgroundSize: "40px 40px",
-              }}
-            ></div>
+          {/* Animated Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(10)].map((_, i) => (
+              <motion.div
+                key={`particle-${i}`}
+                className="absolute rounded-full"
+                style={{
+                  width: `${40 + i * 25}px`,
+                  height: `${40 + i * 25}px`,
+                  left: `${8 + i * 10}%`,
+                  top: `${12 + i * 8}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, ${0.15 - i * 0.012}), transparent)`,
+                  filter: `blur(${18 + i * 4}px)`,
+                }}
+                animate={{
+                  y: [0, -35 - i * 5, 0],
+                  x: [0, 20 + i * 3, 0],
+                  scale: [1, 1.2, 1],
+                  opacity: [0.4, 0.7, 0.4],
+                }}
+                transition={{
+                  duration: 9 + i * 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.4,
+                }}
+              />
+            ))}
           </div>
 
+          {/* Animated target/eye symbols */}
+          <motion.div
+            className="absolute left-1/4 top-1/4 opacity-15"
+            animate={{
+              rotate: [0, 360],
+              scale: [1, 1.3, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          >
+            <Target className="w-24 h-24" style={{ color: "var(--primary)" }} />
+          </motion.div>
+          <motion.div
+            className="absolute right-1/4 top-1/3 opacity-15"
+            animate={{
+              rotate: [360, 0],
+              scale: [1, 1.4, 1],
+            }}
+            transition={{
+              duration: 18,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          >
+            <Eye className="w-28 h-28" style={{ color: "var(--primary)" }} />
+          </motion.div>
+
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
-              className={`text-center transition-all duration-1000 ease-out ${
-                isVisible
-                  ? "opacity-100 translate-y-0 scale-100"
-                  : "opacity-0 translate-y-10 scale-95"
-              }`}
-              style={{ willChange: "opacity, transform" }}
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <h1
+              <motion.h1
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
                 style={{ color: "var(--text-primary)" }}
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
                 Mission & Vision
-              </h1>
-              <div
-                className="w-24 h-1 mx-auto mb-8 rounded-full transition-all duration-1000 delay-300"
+              </motion.h1>
+              <motion.div
+                className="w-24 h-1 mx-auto mb-8 rounded-full"
                 style={{
                   backgroundColor: "var(--primary)",
-                  transform: isVisible ? "scaleX(1)" : "scaleX(0)",
                 }}
-              ></div>
-              <p
-                className="text-lg sm:text-xl max-w-3xl mx-auto transition-all duration-1000 delay-200"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              />
+              <motion.p
+                className="text-lg sm:text-xl max-w-3xl mx-auto"
                 style={{
                   color: "var(--text-secondary)",
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? "translateY(0)" : "translateY(10px)",
                 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
               >
                 Guiding principles that drive our commitment to excellence and
                 innovation
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Main Content */}
         <section
           ref={sectionRef}
-          className="py-16 lg:py-24"
+          className="py-16 lg:py-24 relative overflow-hidden"
           style={{
             backgroundColor: "var(--bg-primary)",
           }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Background animations */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={`bg-${i}`}
+                className="absolute rounded-full blur-3xl"
+                style={{
+                  width: `${100 + i * 60}px`,
+                  height: `${100 + i * 60}px`,
+                  left: `${18 + i * 15}%`,
+                  top: `${12 + i * 18}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent)`,
+                }}
+                animate={{
+                  y: [0, -60, 0],
+                  x: [0, 45, 0],
+                  scale: [1, 1.4, 1],
+                }}
+                transition={{
+                  duration: 14 + i * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.9,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Mission Section */}
-            <div className="mb-20 scroll-animate">
+            <motion.div
+              className="mb-20"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.8 }}
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                <div>
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                >
                   <div className="flex items-center mb-6">
-                    <div
+                    <motion.div
                       className="p-4 rounded-xl mr-4"
                       style={{
                         backgroundColor: "var(--tertiary)",
                         color: "var(--primary)",
                       }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
                     >
-                      <Target className="w-8 h-8" />
-                    </div>
+                      <motion.div
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 20,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      >
+                        <Target className="w-8 h-8" />
+                      </motion.div>
+                    </motion.div>
                     <h2
                       className="text-3xl sm:text-4xl font-bold"
                       style={{ color: "var(--text-primary)" }}
@@ -201,9 +268,17 @@ export default function MissionVisionPage() {
                       Mission
                     </h2>
                   </div>
-                  <div
-                    className="space-y-4 text-base sm:text-lg leading-relaxed"
-                    style={{ color: "var(--text-secondary)" }}
+                  <motion.div
+                    className="space-y-4 text-base sm:text-lg leading-relaxed p-6 rounded-xl"
+                    style={{
+                      color: "var(--text-secondary)",
+                      background: "rgba(139, 69, 19, 0.03)",
+                      border: "1px solid rgba(139, 69, 19, 0.1)",
+                    }}
+                    whileHover={!isMobile ? {
+                      scale: 1.02,
+                      boxShadow: "0 10px 30px rgba(139, 69, 19, 0.15)",
+                    } : {}}
                   >
                     <p>
                       Our mission is to ensure seamless and secure operations
@@ -212,25 +287,57 @@ export default function MissionVisionPage() {
                       solutions and maintaining an extensive network of
                       suppliers across key markets.
                     </p>
-                  </div>
-                </div>
-                <div
-                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl scroll-animate group"
+                  </motion.div>
+                </motion.div>
+                <motion.div
+                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl group"
                   style={{ backgroundColor: "var(--tertiary)" }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.02)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  whileHover={!isMobile ? { scale: 1.05, rotateY: 5 } : {}}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                    <Target
-                      className="w-32 h-32 transition-all duration-500 group-hover:rotate-12"
-                      style={{ color: "var(--primary)" }}
-                    />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.div
+                      animate={{
+                        rotate: [0, 360],
+                        scale: [1, 1.15, 1],
+                      }}
+                      transition={{
+                        duration: 15,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    >
+                      <Target
+                        className="w-32 h-32"
+                        style={{ color: "var(--primary)" }}
+                      />
+                    </motion.div>
                   </div>
-                </div>
+                  {/* Orbiting elements */}
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-2 h-2 rounded-full"
+                      style={{
+                        background: "var(--primary)",
+                        boxShadow: "0 0 8px var(--primary)",
+                        left: "50%",
+                        top: "50%",
+                      }}
+                      animate={{
+                        x: [0, Math.cos((i * 45 * Math.PI) / 180) * 120],
+                        y: [0, Math.sin((i * 45 * Math.PI) / 180) * 120],
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  ))}
+                </motion.div>
               </div>
 
               {/* Mission Points */}
@@ -238,33 +345,34 @@ export default function MissionVisionPage() {
                 {missionPoints.map((point, index) => {
                   const Icon = point.icon;
                   return (
-                    <div
+                    <motion.div
                       key={point.title}
-                      className="p-6 rounded-xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 scroll-animate"
+                      className="p-6 rounded-xl"
                       style={{
                         backgroundColor: "var(--bg-secondary)",
                         border: "1px solid var(--border-primary)",
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "var(--primary)";
-                        e.currentTarget.style.boxShadow =
-                          "0 10px 30px var(--shadow-md)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor =
-                          "var(--border-primary)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                      transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+                      whileHover={!isMobile ? {
+                        scale: 1.05,
+                        y: -8,
+                        borderColor: "var(--primary)",
+                        boxShadow: "0 10px 30px rgba(139, 69, 19, 0.2)",
+                      } : {}}
                     >
-                      <div
+                      <motion.div
                         className="p-3 rounded-lg w-fit mb-4"
                         style={{
                           backgroundColor: "var(--tertiary)",
                           color: "var(--primary)",
                         }}
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.6 }}
                       >
                         <Icon className="w-6 h-6" />
-                      </div>
+                      </motion.div>
                       <h3
                         className="text-lg font-semibold mb-2"
                         style={{ color: "var(--text-primary)" }}
@@ -277,51 +385,93 @@ export default function MissionVisionPage() {
                       >
                         {point.description}
                       </p>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
 
             {/* Divider */}
-            <div className="my-16 scroll-animate">
+            <motion.div
+              className="my-16"
+              initial={{ scaleX: 0 }}
+              animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+              transition={{ duration: 1 }}
+            >
               <div
                 className="h-px w-full"
                 style={{ backgroundColor: "var(--border-primary)" }}
               ></div>
-            </div>
+            </motion.div>
 
             {/* Vision Section */}
-            <div className="mb-20 scroll-animate">
+            <motion.div
+              className="mb-20"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                <div
-                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl scroll-animate group order-2 lg:order-1"
+                <motion.div
+                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl group order-2 lg:order-1"
                   style={{ backgroundColor: "var(--tertiary)" }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.02)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  whileHover={!isMobile ? { scale: 1.05, rotateY: -5 } : {}}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                    <Eye
-                      className="w-32 h-32 transition-all duration-500 group-hover:rotate-12"
-                      style={{ color: "var(--primary)" }}
-                    />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Eye
+                        className="w-32 h-32"
+                        style={{ color: "var(--primary)" }}
+                      />
+                    </motion.div>
                   </div>
-                </div>
-                <div className="order-1 lg:order-2">
+                  {/* Pulsing rings */}
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute inset-0 rounded-2xl border-2 border-var(--primary)"
+                      animate={{
+                        scale: [1, 1.5 + i * 0.2],
+                        opacity: [0.5, 0],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeOut",
+                        delay: i * 0.5,
+                      }}
+                    />
+                  ))}
+                </motion.div>
+                <motion.div
+                  className="order-1 lg:order-2"
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                >
                   <div className="flex items-center mb-6">
-                    <div
+                    <motion.div
                       className="p-4 rounded-xl mr-4"
                       style={{
                         backgroundColor: "var(--tertiary)",
                         color: "var(--primary)",
                       }}
+                      whileHover={{ scale: 1.1, rotate: -5 }}
                     >
                       <Eye className="w-8 h-8" />
-                    </div>
+                    </motion.div>
                     <h2
                       className="text-3xl sm:text-4xl font-bold"
                       style={{ color: "var(--text-primary)" }}
@@ -329,9 +479,17 @@ export default function MissionVisionPage() {
                       Vision
                     </h2>
                   </div>
-                  <div
-                    className="space-y-4 text-base sm:text-lg leading-relaxed"
-                    style={{ color: "var(--text-secondary)" }}
+                  <motion.div
+                    className="space-y-4 text-base sm:text-lg leading-relaxed p-6 rounded-xl"
+                    style={{
+                      color: "var(--text-secondary)",
+                      background: "rgba(139, 69, 19, 0.03)",
+                      border: "1px solid rgba(139, 69, 19, 0.1)",
+                    }}
+                    whileHover={!isMobile ? {
+                      scale: 1.02,
+                      boxShadow: "0 10px 30px rgba(139, 69, 19, 0.15)",
+                    } : {}}
                   >
                     <p>
                       Our vision is to be a leading chemical distributor locally
@@ -340,8 +498,8 @@ export default function MissionVisionPage() {
                       and to be a company where suppliers can rely, employees are
                       proud of and investors seek long term returns.
                     </p>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               </div>
 
               {/* Vision Points */}
@@ -349,33 +507,34 @@ export default function MissionVisionPage() {
                 {visionPoints.map((point, index) => {
                   const Icon = point.icon;
                   return (
-                    <div
+                    <motion.div
                       key={point.title}
-                      className="p-6 rounded-xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 scroll-animate"
+                      className="p-6 rounded-xl"
                       style={{
                         backgroundColor: "var(--bg-secondary)",
                         border: "1px solid var(--border-primary)",
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "var(--primary)";
-                        e.currentTarget.style.boxShadow =
-                          "0 10px 30px var(--shadow-md)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor =
-                          "var(--border-primary)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                      transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
+                      whileHover={!isMobile ? {
+                        scale: 1.05,
+                        y: -8,
+                        borderColor: "var(--primary)",
+                        boxShadow: "0 10px 30px rgba(139, 69, 19, 0.2)",
+                      } : {}}
                     >
-                      <div
+                      <motion.div
                         className="p-3 rounded-lg w-fit mb-4"
                         style={{
                           backgroundColor: "var(--tertiary)",
                           color: "var(--primary)",
                         }}
+                        whileHover={{ rotate: -360 }}
+                        transition={{ duration: 0.6 }}
                       >
                         <Icon className="w-6 h-6" />
-                      </div>
+                      </motion.div>
                       <h3
                         className="text-lg font-semibold mb-2"
                         style={{ color: "var(--text-primary)" }}
@@ -388,28 +547,47 @@ export default function MissionVisionPage() {
                       >
                         {point.description}
                       </p>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
 
             {/* Values Section */}
-            <div className="scroll-animate">
-              <div
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <motion.div
                 className="p-8 lg:p-12 rounded-2xl"
                 style={{
                   backgroundColor: "var(--bg-secondary)",
                   border: "2px solid var(--primary)",
                 }}
+                whileHover={!isMobile ? {
+                  scale: 1.02,
+                  boxShadow: "0 20px 40px rgba(139, 69, 19, 0.3)",
+                } : {}}
               >
                 <div className="max-w-4xl mx-auto text-center">
-                  <h2
+                  <motion.h2
                     className="text-3xl sm:text-4xl font-bold mb-6"
                     style={{ color: "var(--text-primary)" }}
+                    animate={{
+                      textShadow: [
+                        "0 0 0px rgba(139, 69, 19, 0)",
+                        "0 0 20px rgba(139, 69, 19, 0.4)",
+                        "0 0 0px rgba(139, 69, 19, 0)",
+                      ],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                    }}
                   >
                     Our Commitment
-                  </h2>
+                  </motion.h2>
                   <p
                     className="text-base sm:text-lg leading-relaxed"
                     style={{ color: "var(--text-secondary)" }}
@@ -421,8 +599,8 @@ export default function MissionVisionPage() {
                     in every interaction and transaction.
                   </p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       </main>
@@ -430,4 +608,3 @@ export default function MissionVisionPage() {
     </>
   );
 }
-

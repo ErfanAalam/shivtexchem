@@ -13,10 +13,14 @@ import {
   Instagram,
   ArrowUp,
 } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 export default function Footer() {
   const [isVisible] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const footerRef = useRef<HTMLElement>(null);
+  const isInView = useInView(footerRef, { once: true, amount: 0.2 });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,23 +52,114 @@ export default function Footer() {
     { icon: Instagram, href: "#", label: "Instagram" },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 },
+    },
+  };
+
   return (
     <>
-      <footer
-        className={`w-full transition-all duration-700 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
+      <motion.footer
+        ref={footerRef}
+        className="w-full relative overflow-hidden"
         style={{
           backgroundColor: "var(--bg-secondary)",
           borderTop: "1px solid var(--border-primary)",
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isVisible ? 1 : 0 }}
+        transition={{ duration: 0.7 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={`bg-orb-${i}`}
+              className="absolute rounded-full blur-3xl"
+              style={{
+                width: `${100 + i * 50}px`,
+                height: `${100 + i * 50}px`,
+                left: `${10 + i * 15}%`,
+                top: `${20 + i * 10}%`,
+                background: `radial-gradient(circle, rgba(139, 69, 19, ${
+                  0.15 - i * 0.02
+                }), transparent)`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                x: [0, 20, 0],
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 10 + i * 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.5,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Wave decoration */}
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={`wave-${i}`}
+            className="absolute left-0 right-0"
+            style={{
+              height: "2px",
+              top: `${i * 30}%`,
+              background: `linear-gradient(90deg, transparent, rgba(139, 69, 19, ${
+                0.2 - i * 0.05
+              }), transparent)`,
+            }}
+            animate={{
+              scaleX: [0.5, 1.5, 0.5],
+              opacity: [0.2, 0.5, 0.2],
+            }}
+            transition={{
+              duration: 5 + i,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.7,
+            }}
+          />
+        ))}
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 relative z-10">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12"
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
             {/* Logo and Company Info */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3 group/logo">
-                <div className="relative w-12 h-12 transition-transform duration-300 group-hover/logo:scale-110 shrink-0">
+            <motion.div className="space-y-4" variants={itemVariants}>
+              <motion.div
+                className="flex items-center space-x-3 group/logo"
+                whileHover={{ x: 5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div
+                  className="relative w-12 h-12 shrink-0"
+                  whileHover={{ scale: 1.15, rotate: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <Image
                     src="/logo_shivtexchem.webp"
                     alt="Shiv Texchem Limited Logo"
@@ -73,14 +168,33 @@ export default function Footer() {
                     className="object-contain"
                     priority
                   />
-                </div>
+                  {/* Rotating ring on hover */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-var(--primary)"
+                    initial={{ scale: 1, opacity: 0 }}
+                    whileHover={{
+                      scale: [1, 1.3],
+                      opacity: [0, 0.5, 0],
+                      rotate: [0, 180],
+                    }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                </motion.div>
                 <div className="flex flex-col">
-                  <span
+                  <motion.span
                     className="text-lg font-bold leading-tight"
                     style={{ color: "var(--primary)" }}
+                    animate={{
+                      textShadow: [
+                        "0 0 0px rgba(139, 69, 19, 0)",
+                        "0 0 10px rgba(139, 69, 19, 0.3)",
+                        "0 0 0px rgba(139, 69, 19, 0)",
+                      ],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
                   >
                     Shiv Texchem Limited
-                  </span>
+                  </motion.span>
                   <span
                     className="text-xs leading-tight"
                     style={{ color: "var(--text-tertiary)" }}
@@ -88,149 +202,221 @@ export default function Footer() {
                     Formerly known as Shiv Texchem Private Limited
                   </span>
                 </div>
-              </div>
-              <p
+              </motion.div>
+              <motion.p
                 className="text-sm leading-relaxed"
                 style={{ color: "var(--text-secondary)" }}
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
               >
                 Leading the way in chemical manufacturing and distribution with
                 excellence and innovation.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             {/* Quick Links */}
-            <div>
-              <h3
-                className="text-lg font-semibold mb-4"
+            <motion.div variants={itemVariants}>
+              <motion.h3
+                className="text-lg font-semibold mb-4 relative inline-block"
                 style={{ color: "var(--text-primary)" }}
               >
                 Quick Links
-              </h3>
+                <motion.span
+                  className="absolute -bottom-1 left-0 h-0.5 bg-var(--primary)"
+                  initial={{ width: 0 }}
+                  animate={isInView ? { width: "100%" } : { width: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                />
+              </motion.h3>
               <ul className="space-y-2">
                 {navLinks.map((link, index) => (
-                  <li
+                  <motion.li
                     key={link.href}
-                    className="opacity-0 animate-fade-in-up"
-                    style={{
-                      animationDelay: `${index * 100}ms`,
-                      animationFillMode: "forwards",
-                    }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={
+                      isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }
+                    }
+                    transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                   >
-                    <Link
-                      href={link.href}
-                      className="text-sm transition-all duration-300 hover:translate-x-1 inline-block group"
-                      style={{ color: "var(--text-secondary)" }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = "var(--primary)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = "var(--text-secondary)";
-                      }}
-                    >
-                      <span className="flex items-center">
-                        <span
-                          className="w-0 h-0.5 transition-all duration-300 group-hover:w-3 mr-0 group-hover:mr-2"
+                    <Link href={link.href} className="group inline-block">
+                      <motion.span
+                        className="text-sm flex items-center"
+                        style={{ color: "var(--text-secondary)" }}
+                        whileHover={{ x: 5, color: "var(--primary)" }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <motion.span
+                          className="h-0.5 mr-0"
                           style={{ backgroundColor: "var(--primary)" }}
-                        ></span>
+                          initial={{ width: 0 }}
+                          whileHover={{ width: 12, marginRight: 8 }}
+                          transition={{ duration: 0.3 }}
+                        />
                         {link.label}
-                      </span>
+                      </motion.span>
                     </Link>
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* Contact Information */}
-            <div>
-              <h3
-                className="text-lg font-semibold mb-4"
+            <motion.div variants={itemVariants}>
+              <motion.h3
+                className="text-lg font-semibold mb-4 relative inline-block"
                 style={{ color: "var(--text-primary)" }}
               >
                 Contact Us
-              </h3>
+                <motion.span
+                  className="absolute -bottom-1 left-0 h-0.5 bg-var(--primary)"
+                  initial={{ width: 0 }}
+                  animate={isInView ? { width: "100%" } : { width: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                />
+              </motion.h3>
               <ul className="space-y-4">
-                <li className="flex items-start space-x-3 group">
-                  <div
-                    className="p-2 rounded-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shrink-0"
+                <motion.li
+                  className="flex items-start space-x-3 group"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <motion.div
+                    className="p-2 rounded-lg shrink-0 relative overflow-hidden"
                     style={{
                       backgroundColor: "var(--tertiary)",
                       color: "var(--primary)",
                     }}
+                    whileHover={{
+                      scale: 1.15,
+                      rotate: 5,
+                      backgroundColor: "var(--primary)",
+                      color: "var(--button-text)",
+                    }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <Phone className="w-4 h-4" />
-                  </div>
+                    <Phone className="w-4 h-4 relative z-10" />
+                    {/* Ripple effect */}
+                    <motion.div
+                      className="absolute inset-0 rounded-lg border-2 border-var(--primary)"
+                      initial={{ scale: 1, opacity: 0 }}
+                      whileHover={{
+                        scale: [1, 1.5],
+                        opacity: [0.5, 0],
+                      }}
+                      transition={{ duration: 0.6, repeat: Infinity }}
+                    />
+                  </motion.div>
                   <div className="flex-1">
-                    <a
+                    <motion.a
                       href="tel:+912235221869"
-                      className="block text-sm transition-colors duration-300"
+                      className="block text-sm"
                       style={{ color: "var(--text-secondary)" }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = "var(--primary)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = "var(--text-secondary)";
-                      }}
+                      whileHover={{ color: "var(--primary)", x: 3 }}
+                      transition={{ duration: 0.3 }}
                     >
                       +91 22 3522 1869
-                    </a>
-                    <a
+                    </motion.a>
+                    <motion.a
                       href="tel:+912235236213"
-                      className="block text-sm transition-colors duration-300"
+                      className="block text-sm"
                       style={{ color: "var(--text-secondary)" }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = "var(--primary)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = "var(--text-secondary)";
-                      }}
+                      whileHover={{ color: "var(--primary)", x: 3 }}
+                      transition={{ duration: 0.3 }}
                     >
                       +91 22 3523 6213
-                    </a>
+                    </motion.a>
                   </div>
-                </li>
+                </motion.li>
 
-                <li className="flex items-start space-x-3 group">
-                  <div
-                    className="p-2 rounded-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shrink-0"
+                <motion.li
+                  className="flex items-start space-x-3 group"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <motion.div
+                    className="p-2 rounded-lg shrink-0 relative overflow-hidden"
                     style={{
                       backgroundColor: "var(--tertiary)",
                       color: "var(--primary)",
                     }}
+                    whileHover={{
+                      scale: 1.15,
+                      rotate: 5,
+                      backgroundColor: "var(--primary)",
+                      color: "var(--button-text)",
+                    }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <Mail className="w-4 h-4" />
-                  </div>
-                  <a
+                    <Mail className="w-4 h-4 relative z-10" />
+                    {/* Ripple effect */}
+                    <motion.div
+                      className="absolute inset-0 rounded-lg border-2 border-var(--primary)"
+                      initial={{ scale: 1, opacity: 0 }}
+                      whileHover={{
+                        scale: [1, 1.5],
+                        opacity: [0.5, 0],
+                      }}
+                      transition={{ duration: 0.6, repeat: Infinity }}
+                    />
+                  </motion.div>
+                  <motion.a
                     href="mailto:info@shivtexchem.com"
-                    className="flex-1 text-sm transition-colors duration-300 break-all"
+                    className="flex-1 text-sm break-all"
                     style={{ color: "var(--text-secondary)" }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = "var(--primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = "var(--text-secondary)";
-                    }}
+                    whileHover={{ color: "var(--primary)" }}
+                    transition={{ duration: 0.3 }}
                   >
                     info@shivtexchem.com
-                  </a>
-                </li>
+                  </motion.a>
+                </motion.li>
               </ul>
-            </div>
+            </motion.div>
 
             {/* Office Addresses */}
-            <div>
-              <h3
-                className="text-lg font-semibold mb-4"
+            <motion.div variants={itemVariants}>
+              <motion.h3
+                className="text-lg font-semibold mb-4 relative inline-block"
                 style={{ color: "var(--text-primary)" }}
               >
                 Our Offices
-              </h3>
+                <motion.span
+                  className="absolute -bottom-1 left-0 h-0.5 bg-var(--primary)"
+                  initial={{ width: 0 }}
+                  animate={isInView ? { width: "100%" } : { width: 0 }}
+                  transition={{ duration: 0.6, delay: 0.7 }}
+                />
+              </motion.h3>
               <div className="space-y-4">
-                <div className="space-y-2">
+                <motion.div
+                  className="space-y-2 p-3 rounded-lg"
+                  style={{
+                    background: "rgba(139, 69, 19, 0.03)",
+                    border: "1px solid rgba(139, 69, 19, 0.1)",
+                  }}
+                  whileHover={{
+                    scale: 1.02,
+                    borderColor: "rgba(139, 69, 19, 0.3)",
+                    boxShadow: "0 4px 15px rgba(139, 69, 19, 0.1)",
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
                   <div className="flex items-start space-x-2">
-                    <MapPin
-                      className="w-4 h-4 shrink-0 mt-1"
-                      style={{ color: "var(--primary)" }}
-                    />
+                    <motion.div
+                      animate={{
+                        y: [0, -3, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <MapPin
+                        className="w-4 h-4 shrink-0 mt-1"
+                        style={{ color: "var(--primary)" }}
+                      />
+                    </motion.div>
                     <div>
                       <p
                         className="text-xs font-semibold mb-1"
@@ -247,14 +433,38 @@ export default function Footer() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="space-y-2">
+                <motion.div
+                  className="space-y-2 p-3 rounded-lg"
+                  style={{
+                    background: "rgba(139, 69, 19, 0.03)",
+                    border: "1px solid rgba(139, 69, 19, 0.1)",
+                  }}
+                  whileHover={{
+                    scale: 1.02,
+                    borderColor: "rgba(139, 69, 19, 0.3)",
+                    boxShadow: "0 4px 15px rgba(139, 69, 19, 0.1)",
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
                   <div className="flex items-start space-x-2">
-                    <MapPin
-                      className="w-4 h-4 shrink-0 mt-1"
-                      style={{ color: "var(--primary)" }}
-                    />
+                    <motion.div
+                      animate={{
+                        y: [0, -3, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.5,
+                      }}
+                    >
+                      <MapPin
+                        className="w-4 h-4 shrink-0 mt-1"
+                        style={{ color: "var(--primary)" }}
+                      />
+                    </motion.div>
                     <div>
                       <p
                         className="text-xs font-semibold mb-1"
@@ -271,84 +481,158 @@ export default function Footer() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Social Media Links */}
-          <div
+          <motion.div
             className="mt-8 pt-8 border-t"
             style={{ borderColor: "var(--border-primary)" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
           >
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center space-x-4">
-                {socialLinks.map((social) => {
+                {socialLinks.map((social, index) => {
                   const Icon = social.icon;
                   return (
-                    <a
+                    <motion.a
                       key={social.label}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-lg transition-all duration-300 hover:scale-110 hover:-translate-y-1 group"
+                      className="p-2 rounded-lg relative overflow-hidden group"
                       style={{
                         backgroundColor: "var(--tertiary)",
                         color: "var(--text-secondary)",
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          "var(--primary)";
-                        e.currentTarget.style.color = "var(--button-text)";
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={
+                        isInView
+                          ? { opacity: 1, scale: 1 }
+                          : { opacity: 0, scale: 0 }
+                      }
+                      transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
+                      whileHover={{
+                        scale: 1.15,
+                        y: -5,
+                        backgroundColor: "var(--primary)",
+                        color: "var(--button-text)",
+                        boxShadow: "0 8px 20px rgba(139, 69, 19, 0.4)",
                       }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          "var(--tertiary)";
-                        e.currentTarget.style.color = "var(--text-secondary)";
-                      }}
+                      whileTap={{ scale: 0.95 }}
                       aria-label={social.label}
                     >
-                      <Icon className="w-5 h-5" />
-                    </a>
+                      <motion.div
+                        animate={{
+                          rotate: [0, 10, -10, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: index * 0.2,
+                        }}
+                      >
+                        <Icon className="w-5 h-5 relative z-10" />
+                      </motion.div>
+                      {/* Pulsing ring */}
+                      <motion.div
+                        className="absolute inset-0 rounded-lg border-2 border-var(--primary)"
+                        initial={{ scale: 1, opacity: 0 }}
+                        whileHover={{
+                          scale: [1, 1.4],
+                          opacity: [0.5, 0],
+                        }}
+                        transition={{ duration: 0.6, repeat: Infinity }}
+                      />
+                    </motion.a>
                   );
                 })}
               </div>
-              <p
+              <motion.p
                 className="text-xs text-center sm:text-right"
                 style={{ color: "var(--text-tertiary)" }}
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.6, delay: 1 }}
               >
                 © {new Date().getFullYear()} Shiv Texchem Limited. All rights
                 reserved.
-              </p>
+              </motion.p>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </footer>
+      </motion.footer>
 
       {/* Scroll to Top Button */}
-      <button
+      <motion.button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 z-50 p-3 rounded-full shadow-lg transition-all duration-300 ${
-          showScrollTop
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-4 scale-0 pointer-events-none"
-        }`}
+        className="fixed bottom-8 right-8 z-50 p-3 rounded-full overflow-hidden"
         style={{
           backgroundColor: "var(--primary)",
           color: "var(--button-text)",
+          boxShadow: "0 4px 20px rgba(139, 69, 19, 0.4)",
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--primary-hover)";
-          e.currentTarget.style.transform = "scale(1.1)";
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{
+          opacity: showScrollTop ? 1 : 0,
+          scale: showScrollTop ? 1 : 0,
+          y: showScrollTop ? 0 : 20,
         }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--primary)";
-          e.currentTarget.style.transform = "scale(1)";
+        whileHover={{
+          scale: 1.15,
+          boxShadow: "0 8px 30px rgba(139, 69, 19, 0.6)",
         }}
+        whileTap={{ scale: 0.9 }}
+        transition={{ duration: 0.3 }}
         aria-label="Scroll to top"
       >
-        <ArrowUp className="w-5 h-5" />
-      </button>
+        <motion.div
+          animate={{
+            y: [0, -3, 0],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <ArrowUp className="w-5 h-5 relative z-10" />
+        </motion.div>
+        {/* Ripple effect */}
+        <motion.div
+          className="absolute inset-0 rounded-full border-2 border-white"
+          animate={{
+            scale: [1, 1.5],
+            opacity: [0.5, 0],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeOut",
+          }}
+        />
+        {/* Rotating ring */}
+        <motion.div
+          className="absolute inset-0 rounded-full"
+          style={{
+            border: "2px solid rgba(255,255,255,0.3)",
+            borderTopColor: "white",
+          }}
+          animate={{
+            rotate: 360,
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      </motion.button>
     </>
   );
 }

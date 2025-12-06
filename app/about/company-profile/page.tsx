@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Navbar from "@/app/src/components/navbar";
 import Footer from "@/app/src/components/footer";
 import {
@@ -12,61 +12,23 @@ import {
   CheckCircle,
 } from "lucide-react";
 import Image from "next/image";
+import { motion, useInView } from "framer-motion";
 
 export default function CompanyProfilePage() {
-  const [isVisible] = useState(true);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const initializedRef = useRef(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const isInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.05,
+    margin: "-100px",
+  });
 
   useEffect(() => {
-    // Prevent double initialization
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            // Use requestAnimationFrame for smooth animation
-            requestAnimationFrame(() => {
-              element.style.opacity = "1";
-              element.style.transform = "translateY(0)";
-              element.style.transition = `opacity 0.8s ease-out ${
-                index * 0.1
-              }s, transform 0.8s ease-out ${index * 0.1}s`;
-            });
-            observerRef.current?.unobserve(element);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    // Initialize elements immediately but with RAF for smoothness
-    requestAnimationFrame(() => {
-      const elements = document.querySelectorAll(".scroll-animate");
-      elements.forEach((el) => {
-        const htmlEl = el as HTMLElement;
-        // Only set initial state if not already animated
-        if (htmlEl.style.opacity !== "1" && observerRef.current) {
-          htmlEl.style.opacity = "0";
-          htmlEl.style.transform = "translateY(30px)";
-          htmlEl.style.willChange = "opacity, transform";
-          observerRef.current.observe(htmlEl);
-        }
-      });
-    });
-
-    return () => {
-      if (observerRef.current) {
-        const elements = document.querySelectorAll(".scroll-animate");
-        elements.forEach((el) => observerRef.current?.unobserve(el));
-        observerRef.current.disconnect();
-      }
-      initializedRef.current = false;
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const features = [
@@ -115,92 +77,217 @@ export default function CompanyProfilePage() {
     "Specialty Industrial Chemicals",
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 },
+    },
+  };
+
   return (
     <>
       <Navbar />
       <main
-        className="min-h-screen transition-colors duration-300"
+        className="min-h-screen transition-colors duration-300 pt-20"
         style={{
           backgroundColor: "var(--bg-primary)",
           color: "var(--text-primary)",
         }}
       >
         {/* Hero Section */}
-        <section
+        <motion.section
+          ref={heroRef}
           className="relative py-20 lg:py-32 overflow-hidden"
           style={{
             backgroundColor: "var(--bg-secondary)",
           }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="absolute inset-0 opacity-5">
-            <div
-              className="absolute top-0 left-0 w-full h-full"
-              style={{
-                backgroundImage: `radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)`,
-                backgroundSize: "40px 40px",
-              }}
-            ></div>
+          {/* Animated Background Particles */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={`particle-${i}`}
+                className="absolute rounded-full"
+                style={{
+                  width: `${50 + i * 30}px`,
+                  height: `${50 + i * 30}px`,
+                  left: `${10 + i * 12}%`,
+                  top: `${15 + i * 10}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, ${
+                    0.15 - i * 0.015
+                  }), transparent)`,
+                  filter: `blur(${20 + i * 5}px)`,
+                }}
+                animate={{
+                  y: [0, -30 - i * 10, 0],
+                  x: [0, 20 + i * 5, 0],
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  duration: 8 + i * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.5,
+                }}
+              />
+            ))}
           </div>
 
+          {/* Floating geometric shapes */}
+          {[...Array(4)].map((_, i) => (
+            <motion.div
+              key={`shape-${i}`}
+              className="absolute w-16 h-16 border-2 border-var(--primary) opacity-20"
+              style={{
+                left: `${20 + i * 25}%`,
+                top: `${30 + i * 15}%`,
+                rotate: i * 45,
+              }}
+              animate={{
+                y: [0, -50, 0],
+                rotate: [i * 45, i * 45 + 180, i * 45],
+                scale: [1, 1.3, 1],
+              }}
+              transition={{
+                duration: 10 + i * 2,
+                repeat: Infinity,
+                ease: "linear",
+                delay: i * 0.7,
+              }}
+            />
+          ))}
+
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
-              className={`text-center transition-all duration-1000 ease-out ${
-                isVisible
-                  ? "opacity-100 translate-y-0 scale-100"
-                  : "opacity-0 translate-y-10 scale-95"
-              }`}
-              style={{ willChange: "opacity, transform" }}
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <h1
+              <motion.h1
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
                 style={{ color: "var(--text-primary)" }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
                 Company Profile
-              </h1>
-              <div
-                className="w-24 h-1 mx-auto mb-8 rounded-full transition-all duration-1000 delay-300"
+              </motion.h1>
+              <motion.div
+                className="w-24 h-1 mx-auto mb-8 rounded-full"
                 style={{
                   backgroundColor: "var(--primary)",
-                  transform: isVisible ? "scaleX(1)" : "scaleX(0)",
                 }}
-              ></div>
-              <p
-                className="text-lg sm:text-xl max-w-3xl mx-auto transition-all duration-1000 delay-200"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              />
+              <motion.p
+                className="text-lg sm:text-xl max-w-3xl mx-auto"
                 style={{
                   color: "var(--text-secondary)",
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? "translateY(0)" : "translateY(10px)",
                 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
               >
                 Leading the way in chemical import and distribution with
                 excellence and innovation
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Main Content */}
         <section
           ref={sectionRef}
-          className="py-16 lg:py-24"
+          className="py-16 lg:py-24 relative overflow-hidden"
           style={{
             backgroundColor: "var(--bg-primary)",
           }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Background animations */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={`bg-orb-${i}`}
+                className="absolute rounded-full blur-3xl"
+                style={{
+                  width: `${100 + i * 50}px`,
+                  height: `${100 + i * 50}px`,
+                  left: `${15 + i * 20}%`,
+                  top: `${10 + i * 20}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent)`,
+                }}
+                animate={{
+                  y: [0, -40, 0],
+                  x: [0, 30, 0],
+                  scale: [1, 1.3, 1],
+                }}
+                transition={{
+                  duration: 12 + i * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.8,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Introduction */}
-            <div className="mb-16 scroll-animate">
+            <motion.div
+              className="mb-16"
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="scroll-animate">
-                  <h2
-                    className="text-3xl sm:text-4xl font-bold mb-6"
+                <motion.div variants={itemVariants}>
+                  <motion.h2
+                    className="text-3xl sm:text-4xl font-bold mb-6 relative inline-block"
                     style={{ color: "var(--text-primary)" }}
                   >
                     Our Business
-                  </h2>
-                  <div
-                    className="space-y-4 text-base sm:text-lg leading-relaxed"
-                    style={{ color: "var(--text-secondary)" }}
+                    <motion.span
+                      className="absolute -bottom-2 left-0 h-1 bg-var(--primary)"
+                      initial={{ width: 0 }}
+                      animate={isInView ? { width: "100%" } : { width: 0 }}
+                      transition={{ duration: 0.8, delay: 0.5 }}
+                    />
+                  </motion.h2>
+                  <motion.div
+                    className="space-y-4 text-base sm:text-lg leading-relaxed p-6 rounded-xl"
+                    style={{
+                      color: "var(--text-secondary)",
+                      background: "rgba(139, 69, 19, 0.03)",
+                      border: "1px solid rgba(139, 69, 19, 0.1)",
+                    }}
+                    whileHover={
+                      !isMobile
+                        ? {
+                            scale: 1.02,
+                            boxShadow: "0 10px 30px rgba(139, 69, 19, 0.15)",
+                          }
+                        : {}
+                    }
                   >
                     <p>
                       We are primarily engaged in the business of importing and
@@ -213,120 +300,170 @@ export default function CompanyProfilePage() {
                       polymers, pharmaceuticals products and specialty
                       industrial chemicals.
                     </p>
-                  </div>
-                </div>
-                <div
-                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl scroll-animate group"
-                  style={{ backgroundColor: "var(--tertiary)" }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.02)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
+                  </motion.div>
+                </motion.div>
+                <motion.div
+                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl group"
+                  variants={itemVariants}
+                  whileHover={!isMobile ? { scale: 1.03, rotateY: 5 } : {}}
+                  transition={{ duration: 0.4 }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                    {/* <Factory
-                      className="w-32 h-32 transition-all duration-500 group-hover:rotate-12"
-                      style={{ color: "var(--primary)" }}
-                    /> */}
-                    <Image 
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.05, 1],
+                    }}
+                    transition={{
+                      duration: 10,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Image
                       src="/aboutbanner1.jpg"
                       alt="Company Profile"
                       width={2000}
                       height={2000}
                       className="w-full h-full object-cover"
                     />
-                  </div>
-                </div>
+                  </motion.div>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"
+                    animate={{
+                      opacity: [0.5, 0.7, 0.5],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                    }}
+                  />
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Industry Focus */}
-            <div className="mb-16">
-              <h2
-                className="text-3xl sm:text-4xl font-bold mb-8 text-center scroll-animate"
+            <motion.div
+              className="mb-16"
+              initial={{ opacity: 0, y: 50 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <motion.h2
+                className="text-3xl sm:text-4xl font-bold mb-8 text-center relative mx-auto block"
                 style={{ color: "var(--text-primary)" }}
               >
                 Industry Focus
-              </h2>
-              <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                style={{ color: "var(--text-secondary)" }}
-              >
+                <motion.span
+                  className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 bg-var(--primary)"
+                  initial={{ width: 0 }}
+                  animate={isInView ? { width: "60%" } : { width: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                />
+              </motion.h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {industries.map((industry, index) => (
-                  <div
+                  <motion.div
                     key={industry}
-                    className="p-4 rounded-lg scroll-animate transition-all duration-300 ease-out"
+                    className="p-4 rounded-lg"
                     style={{
                       backgroundColor: "var(--bg-secondary)",
                       border: "1px solid var(--border-primary)",
-                      transitionDelay: `${index * 50}ms`,
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "var(--primary)";
-                      e.currentTarget.style.transform =
-                        "translateY(-8px) scale(1.02)";
-                      e.currentTarget.style.boxShadow =
-                        "0 10px 25px var(--shadow-md)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor =
-                        "var(--border-primary)";
-                      e.currentTarget.style.transform =
-                        "translateY(0) scale(1)";
-                      e.currentTarget.style.boxShadow = "none";
-                    }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={
+                      isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }
+                    }
+                    transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                    whileHover={
+                      !isMobile
+                        ? {
+                            scale: 1.05,
+                            y: -8,
+                            borderColor: "var(--primary)",
+                            boxShadow: "0 10px 25px rgba(139, 69, 19, 0.2)",
+                          }
+                        : {}
+                    }
                   >
                     <div className="flex items-center space-x-3">
-                      <CheckCircle
-                        className="w-5 h-5 shrink-0 transition-transform duration-300"
-                        style={{ color: "var(--primary)" }}
-                      />
-                      <span className="font-medium">{industry}</span>
+                      <motion.div
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 20,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      >
+                        <CheckCircle
+                          className="w-5 h-5 shrink-0"
+                          style={{ color: "var(--primary)" }}
+                        />
+                      </motion.div>
+                      <span
+                        className="font-medium"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {industry}
+                      </span>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Business Model */}
-            <div className="mb-16">
+            <motion.div
+              className="mb-16"
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div
-                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl order-2 lg:order-1 scroll-animate group"
-                  style={{ backgroundColor: "var(--tertiary)" }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.02)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
+                <motion.div
+                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl order-2 lg:order-1 group"
+                  variants={itemVariants}
+                  whileHover={!isMobile ? { scale: 1.03, rotateY: -5 } : {}}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                    {/* <Globe
-                      className="w-32 h-32 transition-all duration-500 group-hover:rotate-12"
-                      style={{ color: "var(--primary)" }}
-                    /> */}
-                    <Image
-                      src="/aboutbanner2.webp"
-                      alt="Company Profile"
-                      width={2000}
-                      height={2000}
-                      className="w-full h-full object-fit"
-                    />
-                  </div>
-                </div>
-                <div className="order-1 lg:order-2 scroll-animate">
-                  <h2
-                    className="text-3xl sm:text-4xl font-bold mb-6"
+                  <Image
+                    src="/aboutbanner2.webp"
+                    alt="Company Profile"
+                    width={2000}
+                    height={2000}
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+                <motion.div
+                  className="order-1 lg:order-2"
+                  variants={itemVariants}
+                >
+                  <motion.h2
+                    className="text-3xl sm:text-4xl font-bold mb-6 relative inline-block"
                     style={{ color: "var(--text-primary)" }}
                   >
                     Our Business Model
-                  </h2>
-                  <div
-                    className="space-y-4 text-base sm:text-lg leading-relaxed"
-                    style={{ color: "var(--text-secondary)" }}
+                    <motion.span
+                      className="absolute -bottom-2 left-0 h-1 bg-var(--primary)"
+                      initial={{ width: 0 }}
+                      animate={isInView ? { width: "100%" } : { width: 0 }}
+                      transition={{ duration: 0.8, delay: 0.7 }}
+                    />
+                  </motion.h2>
+                  <motion.div
+                    className="space-y-4 text-base sm:text-lg leading-relaxed p-6 rounded-xl"
+                    style={{
+                      color: "var(--text-secondary)",
+                      background: "rgba(139, 69, 19, 0.03)",
+                      border: "1px solid rgba(139, 69, 19, 0.1)",
+                    }}
+                    whileHover={
+                      !isMobile
+                        ? {
+                            scale: 1.02,
+                            boxShadow: "0 10px 30px rgba(139, 69, 19, 0.15)",
+                          }
+                        : {}
+                    }
                   >
                     <p>
                       In the petrochemical industry, there is a wide array of
@@ -348,57 +485,80 @@ export default function CompanyProfilePage() {
                       printing inks, agrochemicals, pharmaceuticals, specialty
                       polymers, and industrial chemicals.
                     </p>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Features Grid */}
-            <div className="mb-16">
-              <h2
-                className="text-3xl sm:text-4xl font-bold mb-12 text-center scroll-animate"
+            <motion.div
+              className="mb-16"
+              initial={{ opacity: 0, y: 50 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <motion.h2
+                className="text-3xl sm:text-4xl font-bold mb-12 text-center relative mx-auto block"
                 style={{ color: "var(--text-primary)" }}
               >
                 Our Core Strengths
-              </h2>
+                <motion.span
+                  className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 bg-var(--primary)"
+                  initial={{ width: 0 }}
+                  animate={isInView ? { width: "60%" } : { width: 0 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                />
+              </motion.h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
                   return (
-                    <div
+                    <motion.div
                       key={feature.title}
-                      className="p-6 rounded-xl scroll-animate transition-all duration-500 ease-out group"
+                      className="p-6 rounded-xl group"
                       style={{
                         backgroundColor: "var(--bg-secondary)",
                         border: "1px solid var(--border-primary)",
-                        transitionDelay: `${index * 100}ms`,
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "var(--primary)";
-                        e.currentTarget.style.transform =
-                          "translateY(-8px) scale(1.03)";
-                        e.currentTarget.style.boxShadow =
-                          "0 15px 35px var(--shadow-lg)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor =
-                          "var(--border-primary)";
-                        e.currentTarget.style.transform =
-                          "translateY(0) scale(1)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={
+                        isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+                      }
+                      transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
+                      whileHover={
+                        !isMobile
+                          ? {
+                              scale: 1.05,
+                              y: -12,
+                              borderColor: "var(--primary)",
+                              boxShadow: "0 15px 35px rgba(139, 69, 19, 0.3)",
+                            }
+                          : {}
+                      }
                     >
-                      <div
-                        className="p-3 rounded-lg w-fit mb-4 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
+                      <motion.div
+                        className="p-3 rounded-lg w-fit mb-4"
                         style={{
                           backgroundColor: "var(--tertiary)",
                           color: "var(--primary)",
                         }}
+                        whileHover={!isMobile ? { scale: 1.1, rotate: 6 } : {}}
                       >
-                        <Icon className="w-6 h-6 transition-transform duration-500" />
-                      </div>
+                        <motion.div
+                          animate={{
+                            rotate: [0, 360],
+                          }}
+                          transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        >
+                          <Icon className="w-6 h-6" />
+                        </motion.div>
+                      </motion.div>
                       <h3
-                        className="text-xl font-semibold mb-2 transition-colors duration-300 group-hover:text-primary"
+                        className="text-xl font-semibold mb-2"
                         style={{ color: "var(--text-primary)" }}
                       >
                         {feature.title}
@@ -409,16 +569,21 @@ export default function CompanyProfilePage() {
                       >
                         {feature.description}
                       </p>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
 
             {/* Services */}
-            <div className="mb-16">
+            <motion.div
+              className="mb-16"
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div className="scroll-animate">
+                <motion.div variants={itemVariants}>
                   <h2
                     className="text-3xl sm:text-4xl font-bold mb-6"
                     style={{ color: "var(--text-primary)" }}
@@ -441,22 +606,23 @@ export default function CompanyProfilePage() {
                       and reliable supply of crucial chemicals.
                     </p>
                   </div>
-                </div>
-                <div
-                  className="p-8 rounded-2xl scroll-animate transition-all duration-500 hover:scale-[1.02]"
+                </motion.div>
+                <motion.div
+                  className="p-8 rounded-2xl"
                   style={{
                     backgroundColor: "var(--bg-secondary)",
                     border: "1px solid var(--border-primary)",
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--primary)";
-                    e.currentTarget.style.boxShadow =
-                      "0 10px 30px var(--shadow-md)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "var(--border-primary)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
+                  variants={itemVariants}
+                  whileHover={
+                    !isMobile
+                      ? {
+                          scale: 1.02,
+                          borderColor: "var(--primary)",
+                          boxShadow: "0 10px 30px rgba(139, 69, 19, 0.2)",
+                        }
+                      : {}
+                  }
                 >
                   <h3
                     className="text-2xl font-semibold mb-6"
@@ -466,46 +632,75 @@ export default function CompanyProfilePage() {
                   </h3>
                   <ul className="space-y-3">
                     {services.map((service, index) => (
-                      <li
+                      <motion.li
                         key={index}
-                        className="flex items-start space-x-3 transition-all duration-300 hover:translate-x-2"
+                        className="flex items-start space-x-3"
                         style={{ color: "var(--text-secondary)" }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={
+                          isInView
+                            ? { opacity: 1, x: 0 }
+                            : { opacity: 0, x: -20 }
+                        }
+                        transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
+                        whileHover={!isMobile ? { x: 5 } : {}}
                       >
                         <CheckCircle
-                          className="w-5 h-5 shrink-0 mt-0.5 transition-transform duration-300"
+                          className="w-5 h-5 shrink-0 mt-0.5"
                           style={{ color: "var(--primary)" }}
                         />
                         <span>{service}</span>
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Value Proposition */}
-            <div className="scroll-animate">
-              <div
-                className="p-8 lg:p-12 rounded-2xl transition-all duration-500 hover:scale-[1.02] group"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={
+                isInView
+                  ? { opacity: 1, scale: 1 }
+                  : { opacity: 0, scale: 0.95 }
+              }
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <motion.div
+                className="p-8 lg:p-12 rounded-2xl group"
                 style={{
                   backgroundColor: "var(--bg-secondary)",
                   border: "2px solid var(--primary)",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 20px 40px var(--shadow-lg)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
-                }}
+                whileHover={
+                  !isMobile
+                    ? {
+                        scale: 1.02,
+                        boxShadow: "0 20px 40px rgba(139, 69, 19, 0.3)",
+                      }
+                    : {}
+                }
               >
                 <div className="max-w-4xl mx-auto text-center">
-                  <Users
-                    className="w-16 h-16 mx-auto mb-6 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
-                    style={{ color: "var(--primary)" }}
-                  />
+                  <motion.div
+                    animate={{
+                      rotate: [0, 360],
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      duration: 20,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                  >
+                    <Users
+                      className="w-16 h-16 mx-auto mb-6"
+                      style={{ color: "var(--primary)" }}
+                    />
+                  </motion.div>
                   <h2
-                    className="text-3xl sm:text-4xl font-bold mb-6 transition-colors duration-300"
+                    className="text-3xl sm:text-4xl font-bold mb-6"
                     style={{ color: "var(--text-primary)" }}
                   >
                     Our Value Proposition
@@ -524,8 +719,8 @@ export default function CompanyProfilePage() {
                     support.
                   </p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       </main>

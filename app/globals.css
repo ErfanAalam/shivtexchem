@@ -38,9 +38,9 @@
   --text-inverse: #ffffff;
 
   /* Background Colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f7fafc;
-  --bg-tertiary: #edf2f7;
+  --bg-primary: #fafbfc;
+  --bg-secondary: #f5f7fa;
+  --bg-tertiary: #f0f2f5;
 
   /* Border Colors */
   --border-primary: #e2e8f0;
@@ -48,9 +48,9 @@
   --border-focus: #8b4513;
 
   /* Shadow Colors */
-  --shadow-sm: rgba(0, 0, 0, 0.05);
-  --shadow-md: rgba(0, 0, 0, 0.1);
-  --shadow-lg: rgba(0, 0, 0, 0.15);
+  --shadow-sm: rgba(139, 69, 19, 0.08);
+  --shadow-md: rgba(139, 69, 19, 0.12);
+  --shadow-lg: rgba(139, 69, 19, 0.2);
 
   /* Navbar Colors */
   --navbar-bg: #ffffff;
@@ -175,6 +175,32 @@ body {
 /* Smooth transitions for interactive elements */
 .transition-smooth {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  /* Reduce motion for better performance on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Better touch targets */
+  button,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimize animations on mobile */
+  .perspective-1000 {
+    perspective: 500px;
+  }
+}
+
+/* Touch manipulation for better mobile performance */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Flip Card Styles */

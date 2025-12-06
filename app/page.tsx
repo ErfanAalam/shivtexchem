@@ -13,6 +13,7 @@ export default function Home() {
         style={{
           backgroundColor: "var(--bg-primary)",
           color: "var(--text-primary)",
+          paddingTop: "0",
         }}
       >
         <HeroSection />

@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Navbar from "@/app/src/components/navbar";
 import Footer from "@/app/src/components/footer";
 import { X } from "lucide-react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 
 interface Leader {
   name: string;
@@ -14,62 +15,21 @@ interface Leader {
 }
 
 export default function OurLeadershipPage() {
-  const [isVisible] = useState(true);
   const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const initializedRef = useRef(false);
-  const modalRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const isInView = useInView(sectionRef, { 
+    once: true, 
+    amount: 0.05,
+    margin: "-100px"
+  });
 
   useEffect(() => {
-    // Prevent double initialization
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            // Use requestAnimationFrame for smooth animation
-            requestAnimationFrame(() => {
-              element.style.opacity = "1";
-              element.style.transform = "translateY(0)";
-              element.style.transition = `opacity 0.8s ease-out ${
-                index * 0.1
-              }s, transform 0.8s ease-out ${index * 0.1}s`;
-            });
-            observerRef.current?.unobserve(element);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    // Initialize elements immediately but with RAF for smoothness
-    requestAnimationFrame(() => {
-      const elements = document.querySelectorAll(".scroll-animate");
-      elements.forEach((el) => {
-        const htmlEl = el as HTMLElement;
-        // Only set initial state if not already animated
-        if (htmlEl.style.opacity !== "1" && observerRef.current) {
-          htmlEl.style.opacity = "0";
-          htmlEl.style.transform = "translateY(30px)";
-          htmlEl.style.willChange = "opacity, transform";
-          observerRef.current.observe(htmlEl);
-        }
-      });
-    });
-
-    return () => {
-      if (observerRef.current) {
-        const elements = document.querySelectorAll(".scroll-animate");
-        elements.forEach((el) => observerRef.current?.unobserve(el));
-        observerRef.current.disconnect();
-      }
-      initializedRef.current = false;
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Close modal on escape key
@@ -162,267 +122,422 @@ export default function OurLeadershipPage() {
     <>
       <Navbar />
       <main
-        className="min-h-screen transition-colors duration-300"
+        className="min-h-screen transition-colors duration-300 pt-20"
         style={{
           backgroundColor: "var(--bg-primary)",
           color: "var(--text-primary)",
         }}
       >
         {/* Hero Section */}
-        <section
+        <motion.section
           className="relative py-20 lg:py-32 overflow-hidden"
           style={{
             backgroundColor: "var(--bg-secondary)",
           }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="absolute inset-0 opacity-5">
-            <div
-              className="absolute top-0 left-0 w-full h-full"
-              style={{
-                backgroundImage: `radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)`,
-                backgroundSize: "40px 40px",
-              }}
-            ></div>
+          {/* Animated Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(7)].map((_, i) => (
+              <motion.div
+                key={`particle-${i}`}
+                className="absolute rounded-full"
+                style={{
+                  width: `${50 + i * 35}px`,
+                  height: `${50 + i * 35}px`,
+                  left: `${6 + i * 13}%`,
+                  top: `${14 + i * 10}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, ${0.14 - i * 0.015}), transparent)`,
+                  filter: `blur(${22 + i * 5}px)`,
+                }}
+                animate={{
+                  y: [0, -38 - i * 7, 0],
+                  x: [0, 22 + i * 4, 0],
+                  scale: [1, 1.25, 1],
+                  opacity: [0.35, 0.65, 0.35],
+                }}
+                transition={{
+                  duration: 9 + i * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.5,
+                }}
+              />
+            ))}
           </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
-              className={`text-center transition-all duration-1000 ease-out ${
-                isVisible
-                  ? "opacity-100 translate-y-0 scale-100"
-                  : "opacity-0 translate-y-10 scale-95"
-              }`}
-              style={{ willChange: "opacity, transform" }}
+          {/* Profile silhouettes floating */}
+          {[...Array(4)].map((_, i) => (
+            <motion.div
+              key={`silhouette-${i}`}
+              className="absolute opacity-8"
+              style={{
+                left: `${15 + i * 25}%`,
+                top: `${20 + i * 15}%`,
+              }}
+              animate={{
+                y: [0, -25, 0],
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 12 + i * 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.6,
+              }}
             >
-              <h1
+              <div
+                className="w-16 h-16 rounded-full"
+                style={{
+                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent)`,
+                }}
+              />
+            </motion.div>
+          ))}
+
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.h1
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
                 style={{ color: "var(--text-primary)" }}
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
                 Our Leadership
-              </h1>
-              <div
-                className="w-24 h-1 mx-auto mb-8 rounded-full transition-all duration-1000 delay-300"
+              </motion.h1>
+              <motion.div
+                className="w-24 h-1 mx-auto mb-8 rounded-full"
                 style={{
                   backgroundColor: "var(--primary)",
-                  transform: isVisible ? "scaleX(1)" : "scaleX(0)",
                 }}
-              ></div>
-              <p
-                className="text-lg sm:text-xl max-w-3xl mx-auto transition-all duration-1000 delay-200"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              />
+              <motion.p
+                className="text-lg sm:text-xl max-w-3xl mx-auto"
                 style={{
                   color: "var(--text-secondary)",
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? "translateY(0)" : "translateY(10px)",
                 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
               >
                 Meet the visionary leaders driving our company&apos;s success
                 and growth
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Main Content */}
         <section
           ref={sectionRef}
-          className="py-16 lg:py-24"
+          className="py-16 lg:py-24 relative overflow-hidden"
           style={{
             backgroundColor: "var(--bg-primary)",
           }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Background animations */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={`bg-${i}`}
+                className="absolute rounded-full blur-3xl"
+                style={{
+                  width: `${110 + i * 55}px`,
+                  height: `${110 + i * 55}px`,
+                  left: `${17 + i * 18}%`,
+                  top: `${14 + i * 20}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent)`,
+                }}
+                animate={{
+                  y: [0, -55, 0],
+                  x: [0, 42, 0],
+                  scale: [1, 1.35, 1],
+                }}
+                transition={{
+                  duration: 16 + i * 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Leaders Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
               {leaders.map((leader, index) => (
-                <div
+                <motion.div
                   key={leader.name}
-                  className="scroll-animate leader-card group"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                  }}
+                  className="leader-card group cursor-pointer"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
-                  <div
-                    className="relative rounded-2xl overflow-hidden shadow-lg transition-all duration-300"
+                  <motion.div
+                    className="relative rounded-2xl overflow-hidden shadow-lg"
                     style={{
                       backgroundColor: "var(--bg-secondary)",
                       border: "1px solid var(--border-primary)",
                     }}
-                    onMouseEnter={(e) => {
-                      const card = e.currentTarget;
-                      card.style.borderColor = "var(--primary)";
-                      card.style.transform = "translateY(-8px)";
-                      card.style.boxShadow = "0 20px 40px var(--shadow-lg)";
-
-                      // Scale image
-                      const image = card.querySelector("img") as HTMLElement;
-                      if (image) {
-                        image.style.transform = "scale(1.05)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      const card = e.currentTarget;
-                      card.style.borderColor = "var(--border-primary)";
-                      card.style.transform = "translateY(0)";
-                      card.style.boxShadow = "0 4px 6px var(--shadow-sm)";
-
-                      // Reset image
-                      const image = card.querySelector("img") as HTMLElement;
-                      if (image) {
-                        image.style.transform = "scale(1)";
-                      }
-                    }}
+                    whileHover={!isMobile ? {
+                      y: -12,
+                      borderColor: "var(--primary)",
+                      boxShadow: "0 20px 40px rgba(139, 69, 19, 0.3)",
+                    } : {}}
                     onClick={() => openModal(leader)}
                   >
                     {/* Image Container */}
                     <div className="relative w-full h-96 overflow-hidden">
-                      <Image
-                        src={leader.image}
-                        alt={leader.name}
-                        fill
-                        className="object-cover transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        priority={index < 3}
-                        style={{
-                          transform: "scale(1)",
-                          transition: "transform 0.5s ease-out",
-                        }}
+                      <motion.div
+                        whileHover={{ scale: 1.08 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <Image
+                          src={leader.image}
+                          alt={leader.name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={index < 3}
+                        />
+                      </motion.div>
+
+                      {/* Gradient overlay */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                        initial={{ opacity: 0.6 }}
+                        whileHover={{ opacity: 0.8 }}
                       />
 
                       {/* Hover indicator */}
-                      <div
-                        className="absolute inset-0 flex items-center justify-center transition-opacity duration-300"
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
                         style={{
                           backgroundColor: "rgba(0, 0, 0, 0.4)",
-                          opacity: 0,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.opacity = "1";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.opacity = "0";
                         }}
                       >
-                        <div
+                        <motion.div
                           className="px-6 py-3 rounded-full text-white font-semibold text-sm shadow-lg"
                           style={{
                             backgroundColor: "var(--primary)",
                           }}
+                          initial={{ scale: 0.8 }}
+                          whileHover={{ scale: 1 }}
                         >
                           Click to view details
-                        </div>
-                      </div>
+                        </motion.div>
+                      </motion.div>
+
+                      {/* Animated corner accents */}
+                      {[
+                        { top: 0, left: 0, rotate: 0 },
+                        { top: 0, right: 0, rotate: 90 },
+                        { bottom: 0, left: 0, rotate: -90 },
+                        { bottom: 0, right: 0, rotate: 180 },
+                      ].map((pos, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute w-6 h-6 opacity-0 group-hover:opacity-100"
+                          style={{
+                            ...pos,
+                            borderTop: "2px solid var(--primary)",
+                            borderLeft: "2px solid var(--primary)",
+                            transform: `rotate(${pos.rotate}deg)`,
+                          }}
+                          initial={{ scale: 0 }}
+                          whileHover={{ scale: 1 }}
+                          transition={{ duration: 0.3, delay: i * 0.05 }}
+                        />
+                      ))}
                     </div>
 
-                    {/* Name and Position - Always Visible */}
+                    {/* Name and Position */}
                     <div className="p-6 text-center">
-                      <h3
-                        className="text-xl lg:text-2xl font-bold mb-2 transition-colors duration-300"
+                      <motion.h3
+                        className="text-xl lg:text-2xl font-bold mb-2"
                         style={{ color: "var(--text-primary)" }}
+                        whileHover={{ color: "var(--primary)" }}
                       >
                         {leader.name}
-                      </h3>
-                      <div
+                      </motion.h3>
+                      <motion.div
                         className="w-16 h-0.5 mx-auto mb-3 rounded-full"
                         style={{ backgroundColor: "var(--primary)" }}
-                      ></div>
+                        initial={{ scaleX: 0 }}
+                        animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+                      />
                       <p
-                        className="text-sm lg:text-base font-medium transition-colors duration-300"
+                        className="text-sm lg:text-base font-medium"
                         style={{ color: "var(--primary)" }}
                       >
                         {leader.position}
                       </p>
                     </div>
-                  </div>
-                </div>
+
+                    {/* Floating particles on hover */}
+                    <AnimatePresence>
+                      {!isMobile && (
+                        <>
+                          {[...Array(3)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="absolute w-2 h-2 rounded-full pointer-events-none"
+                              style={{
+                                background: "var(--primary)",
+                                boxShadow: "0 0 10px var(--primary)",
+                                left: `${30 + i * 20}%`,
+                                bottom: "30%",
+                              }}
+                              initial={{ opacity: 0, y: 0 }}
+                              whileHover={{
+                                opacity: [0, 1, 0],
+                                y: -50,
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                delay: i * 0.3,
+                              }}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
         {/* Modal */}
-        {selectedLeader && (
-          <div
-            className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${
-              isModalOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.75)",
-              backdropFilter: "blur(4px)",
-            }}
-            onClick={closeModal}
-          >
-            <div
-              ref={modalRef}
-              className={`relative max-w-3xl w-full rounded-2xl shadow-2xl transition-all duration-500 ${
-                isModalOpen
-                  ? "opacity-100 scale-100 translate-y-0"
-                  : "opacity-0 scale-95 translate-y-10"
-              }`}
+        <AnimatePresence>
+          {isModalOpen && selectedLeader && (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
               style={{
-                backgroundColor: "var(--bg-secondary)",
-                border: "2px solid var(--primary)",
-                maxHeight: "90vh",
-                overflow: "hidden",
+                backgroundColor: "rgba(0, 0, 0, 0.75)",
+                backdropFilter: "blur(4px)",
               }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={closeModal}
             >
-              {/* Close Button */}
-              <button
-                onClick={closeModal}
-                className="absolute top-4 right-4 z-10 p-2 rounded-full transition-all duration-300 hover:scale-110"
+              <motion.div
+                className="relative max-w-3xl w-full rounded-2xl shadow-2xl"
                 style={{
-                  backgroundColor: "var(--bg-primary)",
-                  color: "var(--text-primary)",
+                  backgroundColor: "var(--bg-secondary)",
+                  border: "2px solid var(--primary)",
+                  maxHeight: "90vh",
+                  overflow: "hidden",
                 }}
-                aria-label="Close modal"
+                initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 50 }}
+                transition={{ duration: 0.4 }}
+                onClick={(e) => e.stopPropagation()}
               >
-                <X className="w-6 h-6" />
-              </button>
+                {/* Close Button */}
+                <motion.button
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 z-10 p-2 rounded-full"
+                  style={{
+                    backgroundColor: "var(--bg-primary)",
+                    color: "var(--text-primary)",
+                  }}
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Close modal"
+                >
+                  <X className="w-6 h-6" />
+                </motion.button>
 
-              {/* Modal Content */}
-              <div className="flex flex-col lg:flex-row">
-                {/* Image Section */}
-                <div className="relative w-full lg:w-1/3 h-64 lg:h-auto shrink-0">
-                  <Image
-                    src={selectedLeader.image}
-                    alt={selectedLeader.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 33vw"
-                  />
-                </div>
+                {/* Modal Content */}
+                <div className="flex flex-col lg:flex-row">
+                  {/* Image Section */}
+                  <motion.div
+                    className="relative w-full lg:w-1/3 h-64 lg:h-auto shrink-0"
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
+                    <Image
+                      src={selectedLeader.image}
+                      alt={selectedLeader.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 33vw"
+                    />
+                  </motion.div>
 
-                {/* Content Section */}
-                <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
-                  <h2
-                    className="text-2xl lg:text-3xl font-bold mb-3"
-                    style={{ color: "var(--text-primary)" }}
+                  {/* Content Section */}
+                  <motion.div
+                    className="flex-1 p-6 lg:p-8 overflow-y-auto"
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
                   >
-                    {selectedLeader.name}
-                  </h2>
-                  <div
-                    className="w-20 h-1 mb-4 rounded-full"
-                    style={{ backgroundColor: "var(--primary)" }}
-                  ></div>
-                  <p
-                    className="text-base lg:text-lg font-semibold mb-6"
-                    style={{ color: "var(--primary)" }}
-                  >
-                    {selectedLeader.position}
-                  </p>
-                  <div
-                    className="prose prose-sm lg:prose-base max-w-none"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    <p className="text-sm lg:text-base leading-relaxed">
-                      {selectedLeader.description}
-                    </p>
-                  </div>
+                    <motion.h2
+                      className="text-2xl lg:text-3xl font-bold mb-3"
+                      style={{ color: "var(--text-primary)" }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                    >
+                      {selectedLeader.name}
+                    </motion.h2>
+                    <motion.div
+                      className="w-20 h-1 mb-4 rounded-full"
+                      style={{ backgroundColor: "var(--primary)" }}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                    />
+                    <motion.p
+                      className="text-base lg:text-lg font-semibold mb-6"
+                      style={{ color: "var(--primary)" }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.6 }}
+                    >
+                      {selectedLeader.position}
+                    </motion.p>
+                    <motion.div
+                      className="prose prose-sm lg:prose-base max-w-none"
+                      style={{ color: "var(--text-secondary)" }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.7 }}
+                    >
+                      <p className="text-sm lg:text-base leading-relaxed">
+                        {selectedLeader.description}
+                      </p>
+                    </motion.div>
+                  </motion.div>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
       <Footer />
     </>

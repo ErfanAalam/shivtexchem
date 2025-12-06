@@ -1,64 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Navbar from "@/app/src/components/navbar";
 import Footer from "@/app/src/components/footer";
 import { Calendar, Building2, FileText, Award } from "lucide-react";
+import { motion, useInView } from "framer-motion";
 
 export default function CompanyHistoryPage() {
-  const [isVisible] = useState(true);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const initializedRef = useRef(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const isInView = useInView(sectionRef, { 
+    once: true, 
+    amount: 0.05,
+    margin: "-100px"
+  });
 
   useEffect(() => {
-    // Prevent double initialization
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            // Use requestAnimationFrame for smooth animation
-            requestAnimationFrame(() => {
-              element.style.opacity = "1";
-              element.style.transform = "translateY(0)";
-              element.style.transition = `opacity 0.8s ease-out ${
-                index * 0.1
-              }s, transform 0.8s ease-out ${index * 0.1}s`;
-            });
-            observerRef.current?.unobserve(element);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    // Initialize elements immediately but with RAF for smoothness
-    requestAnimationFrame(() => {
-      const elements = document.querySelectorAll(".scroll-animate");
-      elements.forEach((el) => {
-        const htmlEl = el as HTMLElement;
-        // Only set initial state if not already animated
-        if (htmlEl.style.opacity !== "1" && observerRef.current) {
-          htmlEl.style.opacity = "0";
-          htmlEl.style.transform = "translateY(30px)";
-          htmlEl.style.willChange = "opacity, transform";
-          observerRef.current.observe(htmlEl);
-        }
-      });
-    });
-
-    return () => {
-      if (observerRef.current) {
-        const elements = document.querySelectorAll(".scroll-animate");
-        elements.forEach((el) => observerRef.current?.unobserve(el));
-        observerRef.current.disconnect();
-      }
-      initializedRef.current = false;
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const milestones = [
@@ -96,87 +57,182 @@ export default function CompanyHistoryPage() {
     <>
       <Navbar />
       <main
-        className="min-h-screen transition-colors duration-300"
+        className="min-h-screen transition-colors duration-300 pt-20"
         style={{
           backgroundColor: "var(--bg-primary)",
           color: "var(--text-primary)",
         }}
       >
         {/* Hero Section */}
-        <section
+        <motion.section
           className="relative py-20 lg:py-32 overflow-hidden"
           style={{
             backgroundColor: "var(--bg-secondary)",
           }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="absolute inset-0 opacity-5">
-            <div
-              className="absolute top-0 left-0 w-full h-full"
-              style={{
-                backgroundImage: `radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)`,
-                backgroundSize: "40px 40px",
-              }}
-            ></div>
+          {/* Animated Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={`particle-${i}`}
+                className="absolute rounded-full"
+                style={{
+                  width: `${60 + i * 40}px`,
+                  height: `${60 + i * 40}px`,
+                  left: `${5 + i * 15}%`,
+                  top: `${10 + i * 12}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, ${0.12 - i * 0.015}), transparent)`,
+                  filter: `blur(${25 + i * 5}px)`,
+                }}
+                animate={{
+                  y: [0, -40 - i * 8, 0],
+                  x: [0, 25 + i * 3, 0],
+                  scale: [1, 1.25, 1],
+                }}
+                transition={{
+                  duration: 10 + i * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.6,
+                }}
+              />
+            ))}
           </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
-              className={`text-center transition-all duration-1000 ease-out ${
-                isVisible
-                  ? "opacity-100 translate-y-0 scale-100"
-                  : "opacity-0 translate-y-10 scale-95"
-              }`}
-              style={{ willChange: "opacity, transform" }}
+          {/* Timeline icons floating */}
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={`icon-${i}`}
+              className="absolute opacity-10"
+              style={{
+                left: `${25 + i * 30}%`,
+                top: `${25 + i * 20}%`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                rotate: [0, 180, 360],
+              }}
+              transition={{
+                duration: 15 + i * 3,
+                repeat: Infinity,
+                ease: "linear",
+              }}
             >
-              <h1
+              <Calendar className="w-20 h-20" style={{ color: "var(--primary)" }} />
+            </motion.div>
+          ))}
+
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.h1
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
                 style={{ color: "var(--text-primary)" }}
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
                 Company History
-              </h1>
-              <div
-                className="w-24 h-1 mx-auto mb-8 rounded-full transition-all duration-1000 delay-300"
+              </motion.h1>
+              <motion.div
+                className="w-24 h-1 mx-auto mb-8 rounded-full"
                 style={{
                   backgroundColor: "var(--primary)",
-                  transform: isVisible ? "scaleX(1)" : "scaleX(0)",
                 }}
-              ></div>
-              <p
-                className="text-lg sm:text-xl max-w-3xl mx-auto transition-all duration-1000 delay-200"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              />
+              <motion.p
+                className="text-lg sm:text-xl max-w-3xl mx-auto"
                 style={{
                   color: "var(--text-secondary)",
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? "translateY(0)" : "translateY(10px)",
                 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
               >
                 A journey of growth, transformation, and excellence in the
                 chemical industry
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Main Content */}
         <section
           ref={sectionRef}
-          className="py-16 lg:py-24"
+          className="py-16 lg:py-24 relative overflow-hidden"
           style={{
             backgroundColor: "var(--bg-primary)",
           }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Background animations */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+            {[...Array(4)].map((_, i) => (
+              <motion.div
+                key={`bg-${i}`}
+                className="absolute rounded-full blur-3xl"
+                style={{
+                  width: `${120 + i * 50}px`,
+                  height: `${120 + i * 50}px`,
+                  left: `${20 + i * 20}%`,
+                  top: `${15 + i * 25}%`,
+                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent)`,
+                }}
+                animate={{
+                  y: [0, -50, 0],
+                  x: [0, 40, 0],
+                }}
+                transition={{
+                  duration: 15 + i * 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Welcome Section */}
-            <div className="mb-16 scroll-animate">
+            <motion.div
+              className="mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.8 }}
+            >
               <div className="max-w-4xl mx-auto text-center">
-                <h2
-                  className="text-3xl sm:text-4xl font-bold mb-6"
+                <motion.h2
+                  className="text-3xl sm:text-4xl font-bold mb-6 relative inline-block"
                   style={{ color: "var(--text-primary)" }}
                 >
                   Welcome to Shiv Texchem Limited
-                </h2>
-                <div
-                  className="space-y-6 text-base sm:text-lg leading-relaxed"
-                  style={{ color: "var(--text-secondary)" }}
+                  <motion.span
+                    className="absolute -bottom-2 left-0 h-1 bg-var(--primary)"
+                    initial={{ width: 0 }}
+                    animate={isInView ? { width: "100%" } : { width: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                  />
+                </motion.h2>
+                <motion.div
+                  className="space-y-6 text-base sm:text-lg leading-relaxed p-6 rounded-xl"
+                  style={{
+                    color: "var(--text-secondary)",
+                    background: "rgba(139, 69, 19, 0.03)",
+                    border: "1px solid rgba(139, 69, 19, 0.1)",
+                  }}
+                  whileHover={!isMobile ? {
+                    scale: 1.02,
+                    boxShadow: "0 10px 30px rgba(139, 69, 19, 0.15)",
+                  } : {}}
                 >
                   <p>
                     Our Company was originally incorporated as a &apos;Shiv
@@ -190,24 +246,38 @@ export default function CompanyHistoryPage() {
                     has been in the chemicals and dyes sector since the date of
                     incorporation.
                   </p>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Timeline Section */}
-            <div className="mb-16 scroll-animate">
-              <h2
-                className="text-3xl sm:text-4xl font-bold mb-12 text-center"
+            <motion.div
+              className="mb-16"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <motion.h2
+                className="text-3xl sm:text-4xl font-bold mb-12 text-center relative inline-block mx-auto block"
                 style={{ color: "var(--text-primary)" }}
               >
                 Our Journey
-              </h2>
+                <motion.span
+                  className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 bg-var(--primary)"
+                  initial={{ width: 0 }}
+                  animate={isInView ? { width: "60%" } : { width: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                />
+              </motion.h2>
               <div className="relative">
                 {/* Timeline Line */}
-                <div
+                <motion.div
                   className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full hidden lg:block"
                   style={{ backgroundColor: "var(--border-primary)" }}
-                ></div>
+                  initial={{ scaleY: 0 }}
+                  animate={isInView ? { scaleY: 1 } : { scaleY: 0 }}
+                  transition={{ duration: 1.5, delay: 0.6 }}
+                />
 
                 <div className="space-y-12 lg:space-y-16">
                   {milestones.map((milestone, index) => {
@@ -215,23 +285,52 @@ export default function CompanyHistoryPage() {
                     const isEven = index % 2 === 0;
 
                     return (
-                      <div
+                      <motion.div
                         key={milestone.year}
                         className={`relative flex flex-col lg:flex-row items-center ${
                           isEven ? "lg:flex-row" : "lg:flex-row-reverse"
-                        } gap-8 scroll-animate`}
+                        } gap-8`}
+                        initial={{ opacity: 0, x: isEven ? -50 : 50 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: isEven ? -50 : 50 }}
+                        transition={{ duration: 0.6, delay: 0.7 + index * 0.2 }}
                       >
                         {/* Timeline Dot */}
                         <div className="relative z-10 shrink-0">
-                          <div
-                            className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all duration-500 hover:scale-110"
+                          <motion.div
+                            className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
                             style={{
                               backgroundColor: "var(--primary)",
                               color: "var(--button-text)",
                             }}
+                            whileHover={{ scale: 1.2, rotate: 360 }}
+                            transition={{ duration: 0.6 }}
                           >
-                            <Icon className="w-8 h-8" />
-                          </div>
+                            <motion.div
+                              animate={{
+                                rotate: [0, 360],
+                              }}
+                              transition={{
+                                duration: 20,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
+                            >
+                              <Icon className="w-8 h-8" />
+                            </motion.div>
+                          </motion.div>
+                          {/* Pulsing ring */}
+                          <motion.div
+                            className="absolute inset-0 rounded-full border-2 border-var(--primary)"
+                            animate={{
+                              scale: [1, 1.5],
+                              opacity: [0.5, 0],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeOut",
+                            }}
+                          />
                         </div>
 
                         {/* Content Card */}
@@ -242,30 +341,36 @@ export default function CompanyHistoryPage() {
                               : "lg:text-left lg:pl-8"
                           } text-center lg:text-left`}
                         >
-                          <div
-                            className="p-6 lg:p-8 rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2"
+                          <motion.div
+                            className="p-6 lg:p-8 rounded-2xl"
                             style={{
                               backgroundColor: "var(--bg-secondary)",
                               border: "1px solid var(--border-primary)",
                             }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor =
-                                "var(--primary)";
-                              e.currentTarget.style.boxShadow =
-                                "0 15px 35px var(--shadow-lg)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor =
-                                "var(--border-primary)";
-                              e.currentTarget.style.boxShadow = "none";
-                            }}
+                            whileHover={!isMobile ? {
+                              scale: 1.05,
+                              y: -8,
+                              borderColor: "var(--primary)",
+                              boxShadow: "0 15px 35px rgba(139, 69, 19, 0.3)",
+                            } : {}}
                           >
-                            <div
+                            <motion.div
                               className="text-2xl font-bold mb-2"
                               style={{ color: "var(--primary)" }}
+                              animate={{
+                                textShadow: [
+                                  "0 0 0px rgba(139, 69, 19, 0)",
+                                  "0 0 20px rgba(139, 69, 19, 0.5)",
+                                  "0 0 0px rgba(139, 69, 19, 0)",
+                                ],
+                              }}
+                              transition={{
+                                duration: 3,
+                                repeat: Infinity,
+                              }}
                             >
                               {milestone.year}
-                            </div>
+                            </motion.div>
                             <h3
                               className="text-xl lg:text-2xl font-semibold mb-3"
                               style={{ color: "var(--text-primary)" }}
@@ -278,28 +383,50 @@ export default function CompanyHistoryPage() {
                             >
                               {milestone.description}
                             </p>
-                          </div>
+                          </motion.div>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Conversion Section */}
-            <div className="scroll-animate">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                  <h2
-                    className="text-3xl sm:text-4xl font-bold mb-6"
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                  <motion.h2
+                    className="text-3xl sm:text-4xl font-bold mb-6 relative inline-block"
                     style={{ color: "var(--text-primary)" }}
                   >
                     Transformation to Public Limited
-                  </h2>
-                  <div
-                    className="space-y-4 text-base sm:text-lg leading-relaxed"
-                    style={{ color: "var(--text-secondary)" }}
+                    <motion.span
+                      className="absolute -bottom-2 left-0 h-1 bg-var(--primary)"
+                      initial={{ width: 0 }}
+                      animate={isInView ? { width: "100%" } : { width: 0 }}
+                      transition={{ duration: 0.8, delay: 0.8 }}
+                    />
+                  </motion.h2>
+                  <motion.div
+                    className="space-y-4 text-base sm:text-lg leading-relaxed p-6 rounded-xl"
+                    style={{
+                      color: "var(--text-secondary)",
+                      background: "rgba(139, 69, 19, 0.03)",
+                      border: "1px solid rgba(139, 69, 19, 0.1)",
+                    }}
+                    whileHover={!isMobile ? {
+                      scale: 1.02,
+                      boxShadow: "0 10px 30px rgba(139, 69, 19, 0.15)",
+                    } : {}}
                   >
                     <p>
                       Subsequently, our Company was converted from a private
@@ -315,39 +442,83 @@ export default function CompanyHistoryPage() {
                       Registrar of Companies bearing Corporate Identity Number
                       U24110MH2005PLC152341.
                     </p>
-                  </div>
-                </div>
-                <div
-                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl scroll-animate group"
+                  </motion.div>
+                </motion.div>
+                <motion.div
+                  className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl group"
                   style={{ backgroundColor: "var(--tertiary)" }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.02)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                  whileHover={!isMobile ? { scale: 1.05, rotateY: 5 } : {}}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                    <FileText
-                      className="w-32 h-32 transition-all duration-500 group-hover:rotate-12"
-                      style={{ color: "var(--primary)" }}
-                    />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.div
+                      animate={{
+                        rotate: [0, 360],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    >
+                      <FileText
+                        className="w-32 h-32"
+                        style={{ color: "var(--primary)" }}
+                      />
+                    </motion.div>
                   </div>
-                </div>
+                  {/* Orbiting particles */}
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-3 h-3 rounded-full"
+                      style={{
+                        background: "var(--primary)",
+                        boxShadow: "0 0 10px var(--primary)",
+                        left: "50%",
+                        top: "50%",
+                      }}
+                      animate={{
+                        x: [0, Math.cos((i * 120 * Math.PI) / 180) * 100],
+                        y: [0, Math.sin((i * 120 * Math.PI) / 180) * 100],
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 3 + i,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  ))}
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Key Information */}
-            <div className="mt-16 scroll-animate">
-              <div
+            <motion.div
+              className="mt-16"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <motion.div
                 className="p-8 lg:p-12 rounded-2xl"
                 style={{
                   backgroundColor: "var(--bg-secondary)",
                   border: "2px solid var(--primary)",
                 }}
+                whileHover={!isMobile ? {
+                  scale: 1.02,
+                  boxShadow: "0 20px 40px rgba(139, 69, 19, 0.3)",
+                } : {}}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
+                  <motion.div
+                    whileHover={!isMobile ? { x: 5 } : {}}
+                  >
                     <h3
                       className="text-xl font-semibold mb-4"
                       style={{ color: "var(--text-primary)" }}
@@ -368,8 +539,10 @@ export default function CompanyHistoryPage() {
                         <strong>CIN:</strong> U24110MH2005PTC152341
                       </p>
                     </div>
-                  </div>
-                  <div>
+                  </motion.div>
+                  <motion.div
+                    whileHover={!isMobile ? { x: -5 } : {}}
+                  >
                     <h3
                       className="text-xl font-semibold mb-4"
                       style={{ color: "var(--text-primary)" }}
@@ -390,10 +563,10 @@ export default function CompanyHistoryPage() {
                         <strong>CIN:</strong> U24110MH2005PLC152341
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       </main>
