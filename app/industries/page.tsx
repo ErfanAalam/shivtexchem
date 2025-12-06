@@ -279,7 +279,8 @@ export default function IndustriesPage() {
                           ".icon-container"
                         ) as HTMLElement;
                         if (iconContainer) {
-                          iconContainer.style.transform = "scale(1.15) rotate(-5deg)";
+                          iconContainer.style.transform =
+                            "scale(1.15) rotate(-5deg)";
                           iconContainer.style.backgroundColor = `${industry.color}20`;
                           iconContainer.style.borderColor = industry.color;
                         }
@@ -289,7 +290,8 @@ export default function IndustriesPage() {
                           ".industry-icon"
                         ) as HTMLElement;
                         if (iconElement) {
-                          iconElement.style.transform = "scale(1.3) rotate(10deg)";
+                          iconElement.style.transform =
+                            "scale(1.3) rotate(10deg)";
                           iconElement.style.color = industry.color;
                         }
 
@@ -306,7 +308,8 @@ export default function IndustriesPage() {
                           ".shimmer-effect"
                         ) as HTMLElement;
                         if (shimmerElement) {
-                          shimmerElement.style.animation = "shimmer 2s infinite";
+                          shimmerElement.style.animation =
+                            "shimmer 2s infinite";
                         }
 
                         // Animate arrow
@@ -337,8 +340,10 @@ export default function IndustriesPage() {
                           ".icon-container"
                         ) as HTMLElement;
                         if (iconContainer) {
-                          iconContainer.style.transform = "scale(1) rotate(0deg)";
-                          iconContainer.style.backgroundColor = "var(--tertiary)";
+                          iconContainer.style.transform =
+                            "scale(1) rotate(0deg)";
+                          iconContainer.style.backgroundColor =
+                            "var(--tertiary)";
                           iconContainer.style.borderColor = "transparent";
                         }
 
@@ -427,14 +432,10 @@ export default function IndustriesPage() {
                             style={{
                               backgroundColor: "var(--tertiary)",
                               borderColor: "transparent",
+                              color: "var(--primary)",
                             }}
                           >
-                            <Icon
-                              className="industry-icon w-10 h-10 transition-all duration-700"
-                              style={{
-                                color: "var(--primary)",
-                              }}
-                            />
+                            <Icon className="industry-icon w-10 h-10 transition-all duration-700" />
                           </div>
                         </div>
 
@@ -462,7 +463,10 @@ export default function IndustriesPage() {
 
                         {/* Animated Progress Bar */}
                         <div className="mt-auto">
-                          <div className="relative h-2 rounded-full overflow-hidden bg-opacity-20" style={{ backgroundColor: "var(--tertiary)" }}>
+                          <div
+                            className="relative h-2 rounded-full overflow-hidden bg-opacity-20"
+                            style={{ backgroundColor: "var(--tertiary)" }}
+                          >
                             <div
                               className="h-full rounded-full transition-all duration-1000 ease-out"
                               style={{
@@ -471,11 +475,13 @@ export default function IndustriesPage() {
                               }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.width = "100%";
-                                e.currentTarget.style.backgroundColor = industry.color;
+                                e.currentTarget.style.backgroundColor =
+                                  industry.color;
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.width = "0%";
-                                e.currentTarget.style.backgroundColor = "var(--primary)";
+                                e.currentTarget.style.backgroundColor =
+                                  "var(--primary)";
                               }}
                             ></div>
                           </div>
@@ -497,11 +503,14 @@ export default function IndustriesPage() {
                             }}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.opacity = "0.6";
-                              e.currentTarget.style.transform = `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px)`;
+                              e.currentTarget.style.transform = `translate(${
+                                Math.random() * 20 - 10
+                              }px, ${Math.random() * 20 - 10}px)`;
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.opacity = "0";
-                              e.currentTarget.style.transform = "translate(0, 0)";
+                              e.currentTarget.style.transform =
+                                "translate(0, 0)";
                             }}
                           ></div>
                         ))}
@@ -541,8 +550,9 @@ export default function IndustriesPage() {
                   With years of experience and a commitment to excellence, we
                   provide reliable chemical solutions that drive innovation
                   across diverse industries. Our extensive product portfolio and
-                  industry expertise make us the preferred partner for businesses
-                  seeking quality, reliability, and cost-effectiveness.
+                  industry expertise make us the preferred partner for
+                  businesses seeking quality, reliability, and
+                  cost-effectiveness.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
                   <div
@@ -615,4 +625,3 @@ export default function IndustriesPage() {
     </>
   );
 }
-

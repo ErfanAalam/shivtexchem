@@ -86,7 +86,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     setTimeout(() => {
       alert("Thank you for your message! We'll get back to you soon.");
@@ -101,19 +101,6 @@ export default function ContactPage() {
       });
       setIsSubmitting(false);
     }, 1000);
-  };
-
-  // Google Maps coordinates for the two locations
-  const corporateOffice = {
-    lat: 19.0760,
-    lng: 72.8777,
-    address: "602, 6th Floor, Savoy Chambers, Hasmukh Nagar, Santacruz West, Mumbai 400054",
-  };
-
-  const registeredOffice = {
-    lat: 19.0760,
-    lng: 72.8777,
-    address: "216, 2nd Floor, Kamla Space, Khira Nagar, Santacruz West, Mumbai 400054",
   };
 
   return (
@@ -176,8 +163,9 @@ export default function ContactPage() {
                 className="text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Have questions or need assistance? We&apos;re here to help. Reach
-                out to us and we&apos;ll get back to you as soon as possible.
+                Have questions or need assistance? We&apos;re here to help.
+                Reach out to us and we&apos;ll get back to you as soon as
+                possible.
               </p>
             </div>
           </div>
@@ -242,7 +230,6 @@ export default function ContactPage() {
                           backgroundColor: "var(--bg-primary)",
                           border: "1px solid var(--border-primary)",
                           color: "var(--text-primary)",
-                          focusRingColor: "var(--primary)",
                         }}
                         onFocus={(e) => {
                           e.currentTarget.style.borderColor = "var(--primary)";
@@ -481,12 +468,15 @@ export default function ContactPage() {
                         }
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--primary)";
+                        e.currentTarget.style.backgroundColor =
+                          "var(--primary)";
                         e.currentTarget.style.boxShadow = "none";
                       }}
                     >
                       <Send className="w-5 h-5" />
-                      <span>{isSubmitting ? "Sending..." : "Send Message"}</span>
+                      <span>
+                        {isSubmitting ? "Sending..." : "Send Message"}
+                      </span>
                     </button>
                   </form>
                 </div>
@@ -662,10 +652,7 @@ export default function ContactPage() {
               >
                 Find Us on Map
               </h2>
-              <p
-                className="text-lg"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <p className="text-lg" style={{ color: "var(--text-secondary)" }}>
                 Visit our offices in Mumbai
               </p>
             </div>
@@ -718,4 +705,3 @@ export default function ContactPage() {
     </>
   );
 }
-

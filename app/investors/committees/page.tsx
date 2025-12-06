@@ -390,14 +390,10 @@ export default function CommitteesPage() {
                               className="p-3 rounded-xl transition-all duration-500"
                               style={{
                                 backgroundColor: "var(--tertiary)",
+                                color: "var(--primary)",
                               }}
                             >
-                              <Icon
-                                className="committee-icon w-6 h-6 transition-all duration-500"
-                                style={{
-                                  color: "var(--primary)",
-                                }}
-                              />
+                              <Icon className="committee-icon w-6 h-6 transition-all duration-500" />
                             </div>
                             <div className="flex-1">
                               <h3
@@ -494,4 +490,3 @@ export default function CommitteesPage() {
     </>
   );
 }
-
