@@ -84,8 +84,8 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: "Email",
-      details: ["info@shivtexchem.com"],
-      href: "mailto:info@shivtexchem.com",
+      details: ["info@dabala.com"],
+      href: "mailto:info@dabala.com",
       color: "#10B981",
     },
     {

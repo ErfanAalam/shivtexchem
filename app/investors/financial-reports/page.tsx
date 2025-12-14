@@ -84,22 +84,22 @@ export default function FinancialReportsPage() {
       items: [
         {
           id: 1,
-          title: "Financial Statement – Shivtex (2024-25)",
+          title: "Financial Statement – Dabala (2024-25)",
           link: "#",
         },
         {
           id: 2,
-          title: "Financial Statement – Shivtex (2023-24)",
+          title: "Financial Statement – Dabala (2023-24)",
           link: "#",
         },
         {
           id: 3,
-          title: "Financial Statement – Shivtex (2022-23)",
+          title: "Financial Statement – Dabala (2022-23)",
           link: "#",
         },
         {
           id: 4,
-          title: "Financial Statement – Shivtex (2021-22)",
+          title: "Financial Statement – Dabala (2021-22)",
           link: "#",
         },
         {
@@ -119,12 +119,12 @@ export default function FinancialReportsPage() {
         },
         {
           id: 8,
-          title: "Financial Statement – Shivtex H1 FY 24-25",
+          title: "Financial Statement – Dabala H1 FY 24-25",
           link: "#",
         },
         {
           id: 9,
-          title: "Shiv Texchem Limited Investor Presentation",
+          title: "Dabala Limited Investor Presentation",
           link: "#",
         },
         {
@@ -146,7 +146,7 @@ export default function FinancialReportsPage() {
         {
           id: 1,
           title:
-            "Mack Trading Company Limited Financial Result FY 2022-2023",
+            "Dabala Limited Financial Result FY 2022-2023",
           link: "#",
         },
         {
@@ -169,13 +169,13 @@ export default function FinancialReportsPage() {
       items: [
         {
           id: 1,
-          title: "20th AGM Notice – Shiv Texchem Ltd",
+          title: "20th AGM Notice – Dabala Ltd",
           link: "#",
         },
         {
           id: 2,
           title:
-            "Scrutinizer Report – AGM – 23rd September, 2025 – Shiv Texchem Ltd",
+            "Scrutinizer Report – AGM – 23rd September, 2025 – Dabala Ltd",
           link: "#",
         },
       ],

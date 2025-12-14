@@ -15,9 +15,9 @@ export default function QueryModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Add focus styles
-  const inputFocusStyle = {
-    "--focus-ring": "0 0 0 3px rgba(139, 69, 19, 0.2)",
-  } as React.CSSProperties;
+  // const inputFocusStyle = {
+  //   "--focus-ring": "0 0 0 3px rgba(139, 69, 19, 0.2)",
+  // } as React.CSSProperties;
 
   useEffect(() => {
     // Check if modal has been shown before

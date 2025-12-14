@@ -161,8 +161,8 @@ export default function Footer() {
                   transition={{ duration: 0.3 }}
                 >
                   <Image
-                    src="/logo_shivtexchem.webp"
-                    alt="Shiv Texchem Limited Logo"
+                    src="/Dabala.svg"
+                    alt="Dabala Logo"
                     fill
                     sizes="48px"
                     className="object-contain"
@@ -193,13 +193,13 @@ export default function Footer() {
                     }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
-                    Shiv Texchem Limited
+                    Dabala Limited
                   </motion.span>
                   <span
                     className="text-xs leading-tight"
                     style={{ color: "var(--text-tertiary)" }}
                   >
-                    Formerly known as Shiv Texchem Private Limited
+                    Formerly known as Dabala Private Limited
                   </span>
                 </div>
               </motion.div>
@@ -361,13 +361,13 @@ export default function Footer() {
                     />
                   </motion.div>
                   <motion.a
-                    href="mailto:info@shivtexchem.com"
+                    href="mailto:info@dabala.com"
                     className="flex-1 text-sm break-all"
                     style={{ color: "var(--text-secondary)" }}
                     whileHover={{ color: "var(--primary)" }}
                     transition={{ duration: 0.3 }}
                   >
-                    info@shivtexchem.com
+                    info@dabala.com
                   </motion.a>
                 </motion.li>
               </ul>
@@ -560,7 +560,7 @@ export default function Footer() {
                 animate={isInView ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.6, delay: 1 }}
               >
-                © {new Date().getFullYear()} Shiv Texchem Limited. All rights
+                © {new Date().getFullYear()} Dabala Limited. All rights
                 reserved.
               </motion.p>
             </div>

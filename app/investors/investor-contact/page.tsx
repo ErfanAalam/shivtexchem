@@ -254,11 +254,11 @@ export default function InvestorContactPage() {
                           style={{ color: "var(--primary)" }}
                         />
                         <a
-                          href="mailto:shivtexchem.smeipo@linkintime.co.in"
+                          href="mailto:dabala.smeipo@linkintime.co.in"
                           className="text-sm transition-colors duration-300 hover:text-primary"
                           style={{ color: "var(--text-secondary)" }}
                         >
-                          shivtexchem.smeipo@linkintime.co.in
+                          dabala.smeipo@linkintime.co.in
                         </a>
                       </div>
 
@@ -276,11 +276,11 @@ export default function InvestorContactPage() {
                             Investor Grievance ID:
                           </p>
                           <a
-                            href="mailto:shivtexchem.smeipo@linkintime.co.in"
+                            href="mailto:dabala.smeipo@linkintime.co.in"
                             className="text-sm transition-colors duration-300 hover:text-primary"
                             style={{ color: "var(--text-secondary)" }}
                           >
-                            shivtexchem.smeipo@linkintime.co.in
+                            dabala.smeipo@linkintime.co.in
                           </a>
                         </div>
                       </div>
@@ -425,11 +425,11 @@ export default function InvestorContactPage() {
                           style={{ color: "var(--primary)" }}
                         />
                         <a
-                          href="mailto:cs@shivtexchem.com"
+                          href="mailto:cs@dabala.com"
                           className="text-sm transition-colors duration-300 hover:text-primary"
                           style={{ color: "var(--text-secondary)" }}
                         >
-                          cs@shivtexchem.com
+                          cs@dabala.com
                         </a>
                       </div>
 
@@ -440,13 +440,13 @@ export default function InvestorContactPage() {
                           style={{ color: "var(--primary)" }}
                         />
                         <a
-                          href="https://shivtexchem.com/"
+                          href="https://dabala.com/"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm transition-colors duration-300 hover:text-primary flex items-center space-x-1"
                           style={{ color: "var(--text-secondary)" }}
                         >
-                          <span>https://shivtexchem.com/</span>
+                          <span>https://dabala.com/</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       </div>

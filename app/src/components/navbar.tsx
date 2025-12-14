@@ -138,8 +138,8 @@ export default function Navbar() {
               transition={{ duration: 0.3 }}
             >
               <Image
-                src="/logo_shivtexchem.webp"
-                alt="Shiv Texchem Limited Logo"
+                src="/Dabala.svg"
+                alt="Dabala Logo"
                 fill
                 sizes="(max-width: 640px) 40px, 48px"
                 className="object-contain"
@@ -168,13 +168,13 @@ export default function Navbar() {
                     : "none",
                 }}
               >
-                Shiv Texchem Limited
+                Dabala Limited
               </motion.span>
               <span
                 className="text-xs leading-tight hidden sm:block"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Formerly known as Shiv Texchem Private Limited
+                Formerly known as Dabala Private Limited
               </span>
             </div>
           </motion.div>
@@ -416,8 +416,8 @@ export default function Navbar() {
           <div className="flex items-center space-x-3">
             <div className="relative w-10 h-10">
               <Image
-                src="/logo_shivtexchem.webp"
-                alt="Shiv Texchem Limited Logo"
+                src="/Dabala.svg"
+                alt="Dabala Logo"
                 fill
                 sizes="40px"
                 className="object-contain"
@@ -428,7 +428,7 @@ export default function Navbar() {
               className="text-lg font-bold"
               style={{ color: "var(--primary)" }}
             >
-              Shiv Texchem Limited
+              Dabala Limited
             </span>
           </div>
           <button
