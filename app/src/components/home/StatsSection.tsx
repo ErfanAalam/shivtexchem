@@ -348,7 +348,7 @@ export default function StatsSection() {
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Shiv Texchem In Numbers
+            Dabala All Chem LLP In Numbers
           </motion.h2>
           <motion.p
             className="text-lg sm:text-xl max-w-3xl mx-auto"
@@ -357,7 +357,7 @@ export default function StatsSection() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            At Shiv Texchem, we stand committed to improving the quality of life
+            At Dabala All Chem LLP, we stand committed to improving the quality of life
             through our wide range of products and services. Pursuing our
             passion, we have adopted &apos;continuous improvement&apos; as a
             motto that shapes our plans and actions.

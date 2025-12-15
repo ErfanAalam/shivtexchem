@@ -254,11 +254,11 @@ export default function InvestorContactPage() {
                           style={{ color: "var(--primary)" }}
                         />
                         <a
-                          href="mailto:dabala.smeipo@linkintime.co.in"
+                          href="mailto: dabalaallchemllp@gmail.com"
                           className="text-sm transition-colors duration-300 hover:text-primary"
                           style={{ color: "var(--text-secondary)" }}
                         >
-                          dabala.smeipo@linkintime.co.in
+                           dabalaallchemllp@gmail.com
                         </a>
                       </div>
 
@@ -276,11 +276,11 @@ export default function InvestorContactPage() {
                             Investor Grievance ID:
                           </p>
                           <a
-                            href="mailto:dabala.smeipo@linkintime.co.in"
+                            href="mailto: dabalaallchemllp@gmail.com"
                             className="text-sm transition-colors duration-300 hover:text-primary"
                             style={{ color: "var(--text-secondary)" }}
                           >
-                            dabala.smeipo@linkintime.co.in
+                             dabalaallchemllp@gmail.com
                           </a>
                         </div>
                       </div>
@@ -296,7 +296,7 @@ export default function InvestorContactPage() {
                           style={{ color: "var(--text-secondary)" }}
                         >
                           <span className="font-semibold">Contact Person: </span>
-                          Shanti Gopalkrishna
+                          Suresh Bhai Patil
                         </p>
                       </div>
 
@@ -383,7 +383,7 @@ export default function InvestorContactPage() {
                             className="text-sm font-semibold"
                             style={{ color: "var(--text-primary)" }}
                           >
-                            Dinky Jain
+                            Suresh Bhai Patil
                           </p>
                         </div>
                       </div>
@@ -425,11 +425,11 @@ export default function InvestorContactPage() {
                           style={{ color: "var(--primary)" }}
                         />
                         <a
-                          href="mailto:cs@dabala.com"
+                          href="mailto: dabalaallchemllp@gmail.com"
                           className="text-sm transition-colors duration-300 hover:text-primary"
                           style={{ color: "var(--text-secondary)" }}
                         >
-                          cs@dabala.com
+                           dabalaallchemllp@gmail.com
                         </a>
                       </div>
 

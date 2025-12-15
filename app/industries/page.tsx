@@ -340,7 +340,7 @@ export default function IndustriesPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
               >
-                At Shiv Texchem, we partner with a wide range of industries to
+                At Dabala All Chem LLP, we partner with a wide range of industries to
                 provide cost-effective solutions.
               </motion.p>
             </motion.div>

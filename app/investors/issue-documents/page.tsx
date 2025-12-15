@@ -94,7 +94,7 @@ export default function IssueDocumentsPage() {
         },
         {
           id: 3,
-          title: "Certificate of Incorporation – Shiv Texchem Limited",
+          title: "Certificate of Incorporation – Dabala Limited",
           link: "#",
         },
       ],
@@ -125,7 +125,7 @@ export default function IssueDocumentsPage() {
         },
         {
           id: 5,
-          title: "Shiv Texchem Limited Prospectus",
+          title: "Dabala Limited Prospectus",
           link: "#",
         },
       ],

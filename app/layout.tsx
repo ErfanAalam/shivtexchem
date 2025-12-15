@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shiv Texchem Limited",
-  description: "Shiv Texchem Limited is a leading textile company in India",
+  title: "DABALA All Chem LLP",
+  description: "DABALA All Chem LLP is a leading chemical company in India",
 };
 
 export default function RootLayout({

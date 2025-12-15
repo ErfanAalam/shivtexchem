@@ -168,7 +168,7 @@ export default function Navbar() {
                     : "none",
                 }}
               >
-                Dabala Limited
+                DABALA All Chem LLP
               </motion.span>
               <span
                 className="text-xs leading-tight hidden sm:block"

@@ -77,22 +77,22 @@ export default function ContactPage() {
     {
       icon: Phone,
       title: "Phone",
-      details: ["+91 22 3522 1869", "+91 22 3523 6213"],
-      href: "tel:+912235221869",
+      details: ["+919136411170"],
+      href: "tel:+919136411170",
       color: "#3B82F6",
     },
     {
       icon: Mail,
       title: "Email",
-      details: ["info@dabala.com"],
-      href: "mailto:info@dabala.com",
+      details: [" dabalaallchemllp@gmail.com"],
+      href: "mailto: dabalaallchemllp@gmail.com",
       color: "#10B981",
     },
     {
       icon: MapPin,
       title: "Corporate Office",
       details: [
-        "602, 6th Floor, Savoy Chambers, Hasmukh Nagar, Santacruz West Mumbai 400054",
+        "C-209, Salasar Nagar No.3 Navghar Road, Bhayandar (East) Thane 401105",
       ],
       color: "#F59E0B",
     },
@@ -100,7 +100,7 @@ export default function ContactPage() {
       icon: MapPin,
       title: "Registered Office",
       details: [
-        "216, 2nd Floor, Kamla Space, Khira Nagar, Santacruz West, Mumbai 400054",
+        "C-209, Salasar Nagar No.3 Navghar Road, Bhayandar (East) Thane 401105",
       ],
       color: "#8B5CF6",
     },
@@ -529,7 +529,7 @@ export default function ContactPage() {
                 animate={mapInView ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Visit our offices in Mumbai
+                Visit our offices in Thane
               </motion.p>
             </motion.div>
 

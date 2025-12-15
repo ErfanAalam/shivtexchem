@@ -526,7 +526,7 @@ export default function HeroSection() {
               }}
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
             >
-              Shiv Texchem Limited
+              Dabala All Chem LLP
             </motion.span>
           </motion.h1>
         </motion.div>

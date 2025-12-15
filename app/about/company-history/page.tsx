@@ -28,7 +28,7 @@ export default function CompanyHistoryPage() {
       year: "2005",
       title: "Company Incorporation",
       description:
-        "Incorporated as 'Shiv Texchem Private Limited' on March 31, 2005",
+        "Incorporated as 'Dabala Private Limited' on March 31, 2005",
     },
     {
       icon: Award,
@@ -42,7 +42,7 @@ export default function CompanyHistoryPage() {
       year: "2024",
       title: "Conversion to Public Limited",
       description:
-        "Converted to public limited company and renamed to 'Shiv Texchem Limited'",
+        "Converted to public limited company and renamed to 'Dabala Limited'",
     },
     {
       icon: Calendar,
@@ -214,7 +214,7 @@ export default function CompanyHistoryPage() {
                   className="text-3xl sm:text-4xl font-bold mb-6 relative inline-block"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  Welcome to Shiv Texchem Limited
+                  Welcome to DABALA All Chem LLP
                   <motion.span
                     className="absolute -bottom-2 left-0 h-1 bg-var(--primary)"
                     initial={{ width: 0 }}
@@ -235,13 +235,13 @@ export default function CompanyHistoryPage() {
                   } : {}}
                 >
                   <p>
-                    Our Company was originally incorporated as a &apos;Shiv
-                    Texchem Private Limited&apos; as private limited company in
+                    Our Company was originally incorporated as a &apos;Dabala
+                    Private Limited&apos; as private limited company in
                     Mumbai under the provisions of the Companies Act, 1965,
                     pursuant to certificate of incorporation dated March 31,
                     2005, issued by Registrar of Companies, Maharashtra, Mumbai.
                     (&quot;ROC&quot;/ &quot;Registrar of Companies&quot;), with
-                    the name &apos;Shiv Texchem Private Limited&apos; bearing
+                    the name &apos;Dabala Private Limited&apos; bearing
                     Corporate Identity Number U24110MH2005PTC152341. Our Company
                     has been in the chemicals and dyes sector since the date of
                     incorporation.
@@ -433,7 +433,7 @@ export default function CompanyHistoryPage() {
                       limited company to a public limited company pursuant to
                       special resolution passed by our shareholders at an
                       Extra-Ordinary General held on June 11, 2024, and the name
-                      of our Company was subsequently changed to &apos;Shiv
+                      of our Company was subsequently changed to &apos;Dabala
                       Texchem Limited.&apos;
                     </p>
                     <p>
@@ -533,7 +533,7 @@ export default function CompanyHistoryPage() {
                         <strong>Date:</strong> March 31, 2005
                       </p>
                       <p>
-                        <strong>Name:</strong> Shiv Texchem Private Limited
+                        <strong>Name:</strong> Dabala Private Limited
                       </p>
                       <p>
                         <strong>CIN:</strong> U24110MH2005PTC152341
@@ -557,7 +557,7 @@ export default function CompanyHistoryPage() {
                         <strong>Conversion Date:</strong> July 05, 2024
                       </p>
                       <p>
-                        <strong>Current Name:</strong> Shiv Texchem Limited
+                        <strong>Current Name:</strong> Dabala Limited
                       </p>
                       <p>
                         <strong>CIN:</strong> U24110MH2005PLC152341

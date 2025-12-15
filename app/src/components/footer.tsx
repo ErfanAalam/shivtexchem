@@ -315,9 +315,9 @@ export default function Footer() {
                       whileHover={{ color: "var(--primary)", x: 3 }}
                       transition={{ duration: 0.3 }}
                     >
-                      +91 22 3522 1869
+                      +91 9136411170
                     </motion.a>
-                    <motion.a
+                    {/* <motion.a
                       href="tel:+912235236213"
                       className="block text-sm"
                       style={{ color: "var(--text-secondary)" }}
@@ -325,7 +325,7 @@ export default function Footer() {
                       transition={{ duration: 0.3 }}
                     >
                       +91 22 3523 6213
-                    </motion.a>
+                    </motion.a> */}
                   </div>
                 </motion.li>
 
@@ -367,7 +367,7 @@ export default function Footer() {
                     whileHover={{ color: "var(--primary)" }}
                     transition={{ duration: 0.3 }}
                   >
-                    info@dabala.com
+                    dabalaallchemllp@gmail.com
                   </motion.a>
                 </motion.li>
               </ul>
@@ -428,14 +428,14 @@ export default function Footer() {
                         className="text-xs leading-relaxed"
                         style={{ color: "var(--text-secondary)" }}
                       >
-                        602, 6th Floor, Savoy Chambers, Hasmukh Nagar, Santacruz
-                        West Mumbai 400054
+                        C-209, Salasar Nagar No.3 Navghar Road, Bhayandar (East)
+                        Thane 401105
                       </p>
                     </div>
                   </div>
                 </motion.div>
 
-                <motion.div
+                {/* <motion.div
                   className="space-y-2 p-3 rounded-lg"
                   style={{
                     background: "rgba(139, 69, 19, 0.03)",
@@ -481,7 +481,7 @@ export default function Footer() {
                       </p>
                     </div>
                   </div>
-                </motion.div>
+                </motion.div> */}
               </div>
             </motion.div>
           </motion.div>
