@@ -68,14 +68,14 @@ export default function OurLeadershipPage() {
 
   const leaders: Leader[] = [
     {
-      name: "abhishek Sharma",
+      name: "Abhishek Sharma",
       position: "Director",
       image: "/partner1.jpeg",
       description:
           "Abhishek sharma is director of the DABALA ALL CHEM LLP.",
       },
     {
-      name: "Rekhs Sharma",
+      name: "Rekha Sharma",
       position: "Director",
       image: "/partner2.jpeg",
       description:

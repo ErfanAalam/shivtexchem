@@ -20,12 +20,14 @@ export default function CompanyProfilePage() {
   const [isMobile, setIsMobile] = useState(false);
   const isInView = useInView(sectionRef, {
     once: true,
-    amount: 0.05,
-    margin: "-100px",
+    amount: isMobile ? 0.01 : 0.05,
+    margin: isMobile ? "-50px" : "-100px",
   });
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -78,22 +80,22 @@ export default function CompanyProfilePage() {
   ];
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: isMobile ? { opacity: 1 } : { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
+        staggerChildren: isMobile ? 0 : 0.15,
+        delayChildren: isMobile ? 0 : 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6 },
+      transition: { duration: isMobile ? 0 : 0.6 },
     },
   };
 
@@ -114,79 +116,82 @@ export default function CompanyProfilePage() {
           style={{
             backgroundColor: "var(--bg-secondary)",
           }}
-          initial={{ opacity: 0 }}
+          initial={isMobile ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: isMobile ? 0 : 0.8 }}
         >
-          {/* Animated Background Particles */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(8)].map((_, i) => (
+          {/* Animated Background Particles - Reduced on mobile */}
+          {!isMobile && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={`particle-${i}`}
+                  className="absolute rounded-full"
+                  style={{
+                    width: `${50 + i * 30}px`,
+                    height: `${50 + i * 30}px`,
+                    left: `${10 + i * 12}%`,
+                    top: `${15 + i * 10}%`,
+                    background: `radial-gradient(circle, rgba(139, 69, 19, ${
+                      0.15 - i * 0.015
+                    }), transparent)`,
+                    filter: `blur(${20 + i * 5}px)`,
+                  }}
+                  animate={{
+                    y: [0, -30 - i * 10, 0],
+                    x: [0, 20 + i * 5, 0],
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.6, 0.3],
+                  }}
+                  transition={{
+                    duration: 8 + i * 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.5,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Floating geometric shapes - Only on desktop */}
+          {!isMobile &&
+            [...Array(4)].map((_, i) => (
               <motion.div
-                key={`particle-${i}`}
-                className="absolute rounded-full"
+                key={`shape-${i}`}
+                className="absolute w-16 h-16 border-2 border-var(--primary) opacity-20"
                 style={{
-                  width: `${50 + i * 30}px`,
-                  height: `${50 + i * 30}px`,
-                  left: `${10 + i * 12}%`,
-                  top: `${15 + i * 10}%`,
-                  background: `radial-gradient(circle, rgba(139, 69, 19, ${
-                    0.15 - i * 0.015
-                  }), transparent)`,
-                  filter: `blur(${20 + i * 5}px)`,
+                  left: `${20 + i * 25}%`,
+                  top: `${30 + i * 15}%`,
+                  rotate: i * 45,
                 }}
                 animate={{
-                  y: [0, -30 - i * 10, 0],
-                  x: [0, 20 + i * 5, 0],
-                  scale: [1, 1.2, 1],
-                  opacity: [0.3, 0.6, 0.3],
+                  y: [0, -50, 0],
+                  rotate: [i * 45, i * 45 + 180, i * 45],
+                  scale: [1, 1.3, 1],
                 }}
                 transition={{
-                  duration: 8 + i * 2,
+                  duration: 10 + i * 2,
                   repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.5,
+                  ease: "linear",
+                  delay: i * 0.7,
                 }}
               />
             ))}
-          </div>
-
-          {/* Floating geometric shapes */}
-          {[...Array(4)].map((_, i) => (
-            <motion.div
-              key={`shape-${i}`}
-              className="absolute w-16 h-16 border-2 border-var(--primary) opacity-20"
-              style={{
-                left: `${20 + i * 25}%`,
-                top: `${30 + i * 15}%`,
-                rotate: i * 45,
-              }}
-              animate={{
-                y: [0, -50, 0],
-                rotate: [i * 45, i * 45 + 180, i * 45],
-                scale: [1, 1.3, 1],
-              }}
-              transition={{
-                duration: 10 + i * 2,
-                repeat: Infinity,
-                ease: "linear",
-                delay: i * 0.7,
-              }}
-            />
-          ))}
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center"
-              initial={{ opacity: 0, y: 50 }}
+              initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: isMobile ? 0 : 0.8, ease: "easeOut" }}
             >
               <motion.h1
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
                 style={{ color: "var(--text-primary)" }}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={isMobile ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.2 }}
               >
                 Company Profile
               </motion.h1>
@@ -195,18 +200,18 @@ export default function CompanyProfilePage() {
                 style={{
                   backgroundColor: "var(--primary)",
                 }}
-                initial={{ scaleX: 0 }}
+                initial={isMobile ? { scaleX: 1 } : { scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
+                transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.4 }}
               />
               <motion.p
                 className="text-lg sm:text-xl max-w-3xl mx-auto"
                 style={{
                   color: "var(--text-secondary)",
                 }}
-                initial={{ opacity: 0, y: 20 }}
+                initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
+                transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.6 }}
               >
                 Leading the way in chemical import and distribution with
                 excellence and innovation
@@ -223,33 +228,35 @@ export default function CompanyProfilePage() {
             backgroundColor: "var(--bg-primary)",
           }}
         >
-          {/* Background animations */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-            {[...Array(5)].map((_, i) => (
-              <motion.div
-                key={`bg-orb-${i}`}
-                className="absolute rounded-full blur-3xl"
-                style={{
-                  width: `${100 + i * 50}px`,
-                  height: `${100 + i * 50}px`,
-                  left: `${15 + i * 20}%`,
-                  top: `${10 + i * 20}%`,
-                  background: `radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent)`,
-                }}
-                animate={{
-                  y: [0, -40, 0],
-                  x: [0, 30, 0],
-                  scale: [1, 1.3, 1],
-                }}
-                transition={{
-                  duration: 12 + i * 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.8,
-                }}
-              />
-            ))}
-          </div>
+          {/* Background animations - Only on desktop */}
+          {!isMobile && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={`bg-orb-${i}`}
+                  className="absolute rounded-full blur-3xl"
+                  style={{
+                    width: `${100 + i * 50}px`,
+                    height: `${100 + i * 50}px`,
+                    left: `${15 + i * 20}%`,
+                    top: `${10 + i * 20}%`,
+                    background: `radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent)`,
+                  }}
+                  animate={{
+                    y: [0, -40, 0],
+                    x: [0, 30, 0],
+                    scale: [1, 1.3, 1],
+                  }}
+                  transition={{
+                    duration: 12 + i * 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.8,
+                  }}
+                />
+              ))}
+            </div>
+          )}
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Introduction */}
@@ -257,7 +264,7 @@ export default function CompanyProfilePage() {
               className="mb-16"
               variants={containerVariants}
               initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
+              animate={isMobile || isInView ? "visible" : "hidden"}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <motion.div variants={itemVariants}>
@@ -268,9 +275,9 @@ export default function CompanyProfilePage() {
                     Our Business
                     <motion.span
                       className="absolute -bottom-2 left-0 h-1 bg-var(--primary)"
-                      initial={{ width: 0 }}
-                      animate={isInView ? { width: "100%" } : { width: 0 }}
-                      transition={{ duration: 0.8, delay: 0.5 }}
+                      initial={isMobile ? { width: "100%" } : { width: 0 }}
+                      animate={isMobile || isInView ? { width: "100%" } : { width: 0 }}
+                      transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.5 }}
                     />
                   </motion.h2>
                   <motion.div
@@ -343,9 +350,9 @@ export default function CompanyProfilePage() {
             {/* Industry Focus */}
             <motion.div
               className="mb-16"
-              initial={{ opacity: 0, y: 50 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              animate={isMobile || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.3 }}
             >
               <motion.h2
                 className="text-3xl sm:text-4xl font-bold mb-8 text-center relative mx-auto block"
@@ -354,9 +361,9 @@ export default function CompanyProfilePage() {
                 Industry Focus
                 <motion.span
                   className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 bg-var(--primary)"
-                  initial={{ width: 0 }}
-                  animate={isInView ? { width: "60%" } : { width: 0 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
+                  initial={isMobile ? { width: "60%" } : { width: 0 }}
+                  animate={isMobile || isInView ? { width: "60%" } : { width: 0 }}
+                  transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.6 }}
                 />
               </motion.h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -368,11 +375,11 @@ export default function CompanyProfilePage() {
                       backgroundColor: "var(--bg-secondary)",
                       border: "1px solid var(--border-primary)",
                     }}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={isMobile ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                     animate={
-                      isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }
+                      isMobile || isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }
                     }
-                    transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                    transition={{ duration: isMobile ? 0 : 0.5, delay: isMobile ? 0 : 0.5 + index * 0.1 }}
                     whileHover={
                       !isMobile
                         ? {
@@ -417,7 +424,7 @@ export default function CompanyProfilePage() {
               className="mb-16"
               variants={containerVariants}
               initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
+              animate={isMobile || isInView ? "visible" : "hidden"}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <motion.div
@@ -444,9 +451,9 @@ export default function CompanyProfilePage() {
                     Our Business Model
                     <motion.span
                       className="absolute -bottom-2 left-0 h-1 bg-var(--primary)"
-                      initial={{ width: 0 }}
-                      animate={isInView ? { width: "100%" } : { width: 0 }}
-                      transition={{ duration: 0.8, delay: 0.7 }}
+                      initial={isMobile ? { width: "100%" } : { width: 0 }}
+                      animate={isMobile || isInView ? { width: "100%" } : { width: 0 }}
+                      transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.7 }}
                     />
                   </motion.h2>
                   <motion.div
@@ -493,9 +500,9 @@ export default function CompanyProfilePage() {
             {/* Features Grid */}
             <motion.div
               className="mb-16"
-              initial={{ opacity: 0, y: 50 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              animate={isMobile || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.4 }}
             >
               <motion.h2
                 className="text-3xl sm:text-4xl font-bold mb-12 text-center relative mx-auto block"
@@ -504,9 +511,9 @@ export default function CompanyProfilePage() {
                 Our Core Strengths
                 <motion.span
                   className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 bg-var(--primary)"
-                  initial={{ width: 0 }}
-                  animate={isInView ? { width: "60%" } : { width: 0 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
+                  initial={isMobile ? { width: "60%" } : { width: 0 }}
+                  animate={isMobile || isInView ? { width: "60%" } : { width: 0 }}
+                  transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.8 }}
                 />
               </motion.h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -520,11 +527,11 @@ export default function CompanyProfilePage() {
                         backgroundColor: "var(--bg-secondary)",
                         border: "1px solid var(--border-primary)",
                       }}
-                      initial={{ opacity: 0, y: 30 }}
+                      initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                       animate={
-                        isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+                        isMobile || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
                       }
-                      transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
+                      transition={{ duration: isMobile ? 0 : 0.6, delay: isMobile ? 0 : 0.9 + index * 0.1 }}
                       whileHover={
                         !isMobile
                           ? {
@@ -580,7 +587,7 @@ export default function CompanyProfilePage() {
               className="mb-16"
               variants={containerVariants}
               initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
+              animate={isMobile || isInView ? "visible" : "hidden"}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <motion.div variants={itemVariants}>
@@ -636,13 +643,13 @@ export default function CompanyProfilePage() {
                         key={index}
                         className="flex items-start space-x-3"
                         style={{ color: "var(--text-secondary)" }}
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={isMobile ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                         animate={
-                          isInView
+                          isMobile || isInView
                             ? { opacity: 1, x: 0 }
                             : { opacity: 0, x: -20 }
                         }
-                        transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
+                        transition={{ duration: isMobile ? 0 : 0.5, delay: isMobile ? 0 : 1.2 + index * 0.1 }}
                         whileHover={!isMobile ? { x: 5 } : {}}
                       >
                         <CheckCircle
@@ -659,13 +666,13 @@ export default function CompanyProfilePage() {
 
             {/* Value Proposition */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={isMobile ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
               animate={
-                isInView
+                isMobile || isInView
                   ? { opacity: 1, scale: 1 }
                   : { opacity: 0, scale: 0.95 }
               }
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: isMobile ? 0 : 0.8, delay: isMobile ? 0 : 0.5 }}
             >
               <motion.div
                 className="p-8 lg:p-12 rounded-2xl group"
