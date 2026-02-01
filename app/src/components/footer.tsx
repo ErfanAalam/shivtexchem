@@ -193,14 +193,14 @@ export default function Footer() {
                     }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
-                    Dabala Limited
+                    Dabala All Chem LLP
                   </motion.span>
-                  <span
+                  {/* <span
                     className="text-xs leading-tight"
                     style={{ color: "var(--text-tertiary)" }}
                   >
                     Formerly known as Dabala Private Limited
-                  </span>
+                  </span> */}
                 </div>
               </motion.div>
               <motion.p
@@ -560,7 +560,7 @@ export default function Footer() {
                 animate={isInView ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.6, delay: 1 }}
               >
-                © {new Date().getFullYear()} Dabala Limited. All rights
+                © {new Date().getFullYear()} Dabala All Chem LLP. All rights
                 reserved.
               </motion.p>
             </div>

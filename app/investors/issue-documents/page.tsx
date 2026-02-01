@@ -94,7 +94,7 @@ export default function IssueDocumentsPage() {
         },
         {
           id: 3,
-          title: "Certificate of Incorporation – Dabala Limited",
+          title: "Certificate of Incorporation – Dabala All Chem LLP",
           link: "#",
         },
       ],
@@ -125,7 +125,7 @@ export default function IssueDocumentsPage() {
         },
         {
           id: 5,
-          title: "Dabala Limited Prospectus",
+          title: "Dabala All Chem LLP Prospectus",
           link: "#",
         },
       ],

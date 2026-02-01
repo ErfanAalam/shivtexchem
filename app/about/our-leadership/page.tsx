@@ -68,54 +68,54 @@ export default function OurLeadershipPage() {
 
   const leaders: Leader[] = [
     {
-      name: "Vikas Pavankumar",
-      position: "Managing Director & Chairman",
-      image: "/vikasji.webp",
+      name: "abhishek Sharma",
+      position: "Director",
+      image: "/partner1.jpeg",
       description:
-        "Vikas Pavankumar is the Managing Director and Chairman of our Company. He has been associated with our Company since April 14, 2021, and was appointed to his current designation pursuant to Board meeting dated July 08, 2024. He obtained his bachelor's degree in science in Industrial Engineering from Purdue University in the year 2009 and completed his graduation programme in Management from the Indian School of Business in the year 2014. Further, he was employed as a Senior Associate with the India Office of the Boston Consulting Group in the year 2014. He currently oversees the sales & marketing operations, business development and human resources in the Company. He has been instrumental in developing the business in the international as well as domestic markets.",
-    },
+          "Abhishek sharma is director of the DABALA ALL CHEM LLP.",
+      },
     {
-      name: "Hemanshu S Chokhani",
-      position: "Chief Financial Officer & Whole Time Director",
-      image: "/himanshuji.webp",
+      name: "Rekhs Sharma",
+      position: "Director",
+      image: "/partner2.jpeg",
       description:
-        "Hemanshu Shyamsundar Chokhani is the Whole Time Director and Chief Financial Officer of our Company. He has been associated with our Company since 19 years and was appointed to his current designation pursuant to Board meeting dated July 08, 2024. He obtained a certification in the Professional Education Examination-I held by the Institute of Chartered Accountants of India in 2005 with an All-India rank of 14 and has been awarded Ganeshmai Patni Memorial Prize for the best paper on Statistics jointly with 58 candidates by the Institute of Chartered Accountants of India in 2005. He completed his final examination in 2009 with an All-India rank of 36. Further, he obtained his Post-Graduate Diploma in Management from the Indian Institute of Management, Ahmedabad in the year 2011. Previously he has worked as a Senior Consultant in Booz & Co. India Private Limited. His professional caliber and acumen ship has been helping Company in a competitive procurement of products and availing trade finance apart from his involvement in accounts, audit, taxation, and other statutory compliances in the Company.",
+        "Rekhs Sharma is director of the DABALA ALL CHEM LLP.",
     },
-    {
-      name: "Shyamsundar Chokhani",
-      position: "Whole Time Director",
-      image: "/shyamji.webp",
-      description:
-        "Shyamsundar Chokhani is the Whole-Time Director of our Company. He has been associated with our Company since 19 years and was appointed to his current designation pursuant to Board meeting dated July 08, 2024. He obtained his master's degree of technology in Mechanical Engineering from the Indian Institute of Technology, Bombay in the year 1973 and has completed a Middle Management Course of the 3-Tier Programme for Management Development held by the Indian Institute of Management in the year 1973. He has been guiding force behind the success of the Company and currently looks after logistics including inbound logistics, vessel chartering, local logistics and domestic banking in the Company.",
-    },
-    {
-      name: "Neha Chokhani",
-      position: "Whole Time Director",
-      image: "/nehaji.webp",
-      description:
-        "Neha Chokhani is the Whole Time Director of our Company. She has been associated with our Company since April 14, 2021, and was appointed to her current designation pursuant to Board meeting dated July 08, 2024. She obtained her bachelor's degree in commerce from the University of Mumbai in the year 2012 and was placed in the first class. She obtained a certification in Integrated Professional Competence Examination held by the Institute of Chartered Accountants of India in the year 2012. She overseas inventory & warehousing, clearance management, custom clearance and custom compliance related matters in the Company.",
-    },
-    {
-      name: "Girdhari Lal Kundalwal",
-      position: "Independent Director",
-      image: "/girdhariji.webp",
-      description:
-        "Girdhari Lal Kundalwal is an Independent Director of our Company and was appointed to this designation pursuant to Board meeting dated July 08, 2024. He obtained his master's degree in commerce (Accountancy and Business Statistics) in the year 1985, and a certification in the Associate Examination of the Indian Institute of Bankers in the year 1989 and his master's degree in business administration (Banking & Finance) in the year 2002 from Indira Gandhi National Open University. He has worked with the Union Bank of India for 38 years, from 1983 up until 2021, and retired as a Deputy General Manager.",
-    },
-    {
-      name: "Sushil Kumar Relan",
-      position: "Independent Director",
-      image: "/sunilji.webp",
-      description:
-        "Sushil Kumar Relan is an Independent Director of our Company and was appointed to this designation pursuant to Board meeting dated July 08, 2024. He obtained his Master's in Arts (Economics) from Meerut University in 1986. He has worked in the State Bank of India from the year 1982, up to 2022 and retired from the position of Deputy General Manager and worked in Nido Home Finance Limited from 2022 to 2023 as a SVP – Internal Audit in the Internal Audit team in Mumbai.",
-    },
-    {
-      name: "Rajen Gada",
-      position: "Independent Director",
-      image: "/rajen_gadaji.webp",
-      description:
-        "Rajen Gada is an Independent Director of our Company and was appointed to this designation pursuant to Board meeting dated July 2024. He obtained his bachelor's degree in commerce from the University of Bombay in 1994, his Chartered Accountancy Degree from the Institute of Chartered Accountants of India in the year 1998, his Graduation Degree as a Cost Accountant from the Institute of Cost Works Accountants of India in the year 1999, and his Limited Insolvency Examination Certificate from the Insolvency and Bankruptcy Board of India in 2017. He has previously worked as the Chief Financial Officer in BCD Travel India Pvt. Ltd.",
-    },
+    // {
+    //   name: "Shyamsundar Chokhani",
+    //   position: "Whole Time Director",
+    //   image: "/shyamji.webp",
+    //   description:
+    //     "Shyamsundar Chokhani is the Whole-Time Director of our Company. He has been associated with our Company since 19 years and was appointed to his current designation pursuant to Board meeting dated July 08, 2024. He obtained his master's degree of technology in Mechanical Engineering from the Indian Institute of Technology, Bombay in the year 1973 and has completed a Middle Management Course of the 3-Tier Programme for Management Development held by the Indian Institute of Management in the year 1973. He has been guiding force behind the success of the Company and currently looks after logistics including inbound logistics, vessel chartering, local logistics and domestic banking in the Company.",
+    // },
+    // {
+    //   name: "Neha Chokhani",
+    //   position: "Whole Time Director",
+    //   image: "/nehaji.webp",
+    //   description:
+    //     "Neha Chokhani is the Whole Time Director of our Company. She has been associated with our Company since April 14, 2021, and was appointed to her current designation pursuant to Board meeting dated July 08, 2024. She obtained her bachelor's degree in commerce from the University of Mumbai in the year 2012 and was placed in the first class. She obtained a certification in Integrated Professional Competence Examination held by the Institute of Chartered Accountants of India in the year 2012. She overseas inventory & warehousing, clearance management, custom clearance and custom compliance related matters in the Company.",
+    // },
+    // {
+    //   name: "Girdhari Lal Kundalwal",
+    //   position: "Independent Director",
+    //   image: "/girdhariji.webp",
+    //   description:
+    //     "Girdhari Lal Kundalwal is an Independent Director of our Company and was appointed to this designation pursuant to Board meeting dated July 08, 2024. He obtained his master's degree in commerce (Accountancy and Business Statistics) in the year 1985, and a certification in the Associate Examination of the Indian Institute of Bankers in the year 1989 and his master's degree in business administration (Banking & Finance) in the year 2002 from Indira Gandhi National Open University. He has worked with the Union Bank of India for 38 years, from 1983 up until 2021, and retired as a Deputy General Manager.",
+    // },
+    // {
+    //   name: "Sushil Kumar Relan",
+    //   position: "Independent Director",
+    //   image: "/sunilji.webp",
+    //   description:
+    //     "Sushil Kumar Relan is an Independent Director of our Company and was appointed to this designation pursuant to Board meeting dated July 08, 2024. He obtained his Master's in Arts (Economics) from Meerut University in 1986. He has worked in the State Bank of India from the year 1982, up to 2022 and retired from the position of Deputy General Manager and worked in Nido Home Finance Limited from 2022 to 2023 as a SVP – Internal Audit in the Internal Audit team in Mumbai.",
+    // },
+    // {
+    //   name: "Rajen Gada",
+    //   position: "Independent Director",
+    //   image: "/rajen_gadaji.webp",
+    //   description:
+    //     "Rajen Gada is an Independent Director of our Company and was appointed to this designation pursuant to Board meeting dated July 2024. He obtained his bachelor's degree in commerce from the University of Bombay in 1994, his Chartered Accountancy Degree from the Institute of Chartered Accountants of India in the year 1998, his Graduation Degree as a Cost Accountant from the Institute of Cost Works Accountants of India in the year 1999, and his Limited Insolvency Examination Certificate from the Insolvency and Bankruptcy Board of India in 2017. He has previously worked as the Chief Financial Officer in BCD Travel India Pvt. Ltd.",
+    // },
   ];
 
   return (
@@ -277,7 +277,7 @@ export default function OurLeadershipPage() {
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Leaders Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 lg:gap-10 items-top justify-center\">
               {leaders.map((leader, index) => (
                 <motion.div
                   key={leader.name}
@@ -309,7 +309,7 @@ export default function OurLeadershipPage() {
                           src={leader.image}
                           alt={leader.name}
                           fill
-                          className="object-cover"
+                          className="object-cover object-top"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={index < 3}
                         />
@@ -484,7 +484,7 @@ export default function OurLeadershipPage() {
                       src={selectedLeader.image}
                       alt={selectedLeader.name}
                       fill
-                      className="object-cover"
+                      className="object-cover object-top"
                       sizes="(max-width: 1024px) 100vw, 33vw"
                     />
                   </motion.div>

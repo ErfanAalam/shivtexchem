@@ -42,7 +42,7 @@ export default function CompanyHistoryPage() {
       year: "2024",
       title: "Conversion to Public Limited",
       description:
-        "Converted to public limited company and renamed to 'Dabala Limited'",
+        "Converted to public limited company and renamed to 'Dabala All Chem LLP'",
     },
     {
       icon: Calendar,
@@ -557,7 +557,7 @@ export default function CompanyHistoryPage() {
                         <strong>Conversion Date:</strong> July 05, 2024
                       </p>
                       <p>
-                        <strong>Current Name:</strong> Dabala Limited
+                        <strong>Current Name:</strong> Dabala All Chem LLP
                       </p>
                       <p>
                         <strong>CIN:</strong> U24110MH2005PLC152341

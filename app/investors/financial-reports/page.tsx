@@ -124,7 +124,7 @@ export default function FinancialReportsPage() {
         },
         {
           id: 9,
-          title: "Dabala Limited Investor Presentation",
+          title: "Dabala All Chem LLP Investor Presentation",
           link: "#",
         },
         {
@@ -146,7 +146,7 @@ export default function FinancialReportsPage() {
         {
           id: 1,
           title:
-            "Dabala Limited Financial Result FY 2022-2023",
+            "Dabala All Chem LLP Financial Result FY 2022-2023",
           link: "#",
         },
         {

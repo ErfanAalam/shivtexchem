@@ -170,12 +170,12 @@ export default function Navbar() {
               >
                 DABALA All Chem LLP
               </motion.span>
-              <span
+              {/* <span
                 className="text-xs leading-tight hidden sm:block"
                 style={{ color: "var(--text-tertiary)" }}
               >
                 Formerly known as Dabala Private Limited
-              </span>
+              </span> */}
             </div>
           </motion.div>
 
@@ -428,7 +428,7 @@ export default function Navbar() {
               className="text-lg font-bold"
               style={{ color: "var(--primary)" }}
             >
-              Dabala Limited
+              Dabala All Chem LLP
             </span>
           </div>
           <button
