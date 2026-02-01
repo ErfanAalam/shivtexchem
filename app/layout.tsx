@@ -42,8 +42,7 @@ export default function RootLayout({
                   if (theme === 'dark' || theme === 'light') {
                     document.documentElement.setAttribute('data-theme', theme);
                   } else {
-                    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                    document.documentElement.setAttribute('data-theme', 'light');
                   }
                 } catch (e) {}
               })();
@@ -61,8 +60,7 @@ export default function RootLayout({
                     if (theme === 'dark' || theme === 'light') {
                       document.documentElement.setAttribute('data-theme', theme);
                     } else {
-                      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                      document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                      document.documentElement.setAttribute('data-theme', 'light');
                     }
                   } catch (e) {}
                 }

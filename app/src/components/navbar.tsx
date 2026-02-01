@@ -87,11 +87,8 @@ export default function Navbar() {
     <motion.nav
       className="w-full fixed top-0 left-0 right-0 z-50 border-b transition-colors duration-300"
       style={{
-        backgroundColor: scrolled
-          ? "rgba(var(--navbar-bg-rgb), 0.95)"
-          : "var(--navbar-bg)",
+        backgroundColor: "var(--navbar-bg)",
         borderColor: "var(--navbar-border)",
-        backdropFilter: scrolled ? "blur(10px)" : "none",
         boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.1)" : "none",
       }}
       initial={{ y: -100 }}
